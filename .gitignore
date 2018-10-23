@@ -1,0 +1,6 @@
+build/
+node_modules/
+dist/bundle.js
+dist/*.bundle.js
+dist/*.module.wasm
+target/

@@ -1,0 +1,10 @@
+[package]
+name = "USS_Uncommon_Priors"
+version = "0.0.1"
+authors = ["Zack M. Davis <code@zackmdavis.net>"]
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+wasm-bindgen = "0.2"
