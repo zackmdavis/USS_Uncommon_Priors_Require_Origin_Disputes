@@ -15,7 +15,7 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
 }
 
 if __name__ == "__main__":
-    os.chdir("./dist")
+    # os.chdir("./dist")
     httpd = socketserver.TCPServer(("", PORT), MyHandler)
     print("serving at port", PORT)
     httpd.serve_forever()

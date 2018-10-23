@@ -1,11 +1,4 @@
 [[package]]
-name = "USS_Uncommon_Priors"
-version = "0.0.1"
-dependencies = [
- "wasm-bindgen 0.2.25 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
 name = "cfg-if"
 version = "0.1.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -91,6 +84,13 @@ dependencies = [
 name = "unicode-xid"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "uss_uncommon_priors"
+version = "0.0.1"
+dependencies = [
+ "wasm-bindgen 0.2.25 (registry+https://github.com/rust-lang/crates.io-index)",
+]
 
 [[package]]
 name = "version_check"

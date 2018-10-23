@@ -6,7 +6,7 @@
   "scripts": {
       "test": "echo \"Error: no test specified\" && exit 1",
       "build-wasm": "cargo build --target wasm32-unknown-unknown",
-      "build-bindgen": "wasm-bindgen target/wasm32-unknown-unknown/debug/USS_Uncommon_Priors.wasm --out-dir build",
+      "build-bindgen": "wasm-bindgen target/wasm32-unknown-unknown/debug/uss_uncommon_priors.wasm --out-dir build",
       "build": "npm run build-wasm && npm run build-bindgen && npx webpack"
   },
   "author": "Zack M. Davis",
