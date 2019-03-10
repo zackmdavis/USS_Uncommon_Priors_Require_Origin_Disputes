@@ -33,14 +33,11 @@ impl Ship {
     }
 
     pub fn reorient_left(&mut self) {
-        // TODO: implement `Add`; this is hideous
-        let new_angle = self.orientation.0 - 0.1;
-        self.orientation = Orientation(new_angle);
+        self.orientation -= Orientation(0.1);
     }
 
     pub fn reorient_right(&mut self) {
-        let new_angle = self.orientation.0 + 0.1;
-        self.orientation = Orientation(new_angle);
+        self.orientation += Orientation(0.1);
     }
 
     pub fn tick(&mut self) {
