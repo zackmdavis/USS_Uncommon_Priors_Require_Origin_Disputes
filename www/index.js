@@ -21,7 +21,20 @@ function renderCircle(x, y, r) {
     ctx.fill();
 }
 
-
-let arena = wasm.new_arena();
+let arena = wasm.uncommon_priors_require_origin_disputes();
 arena.tick();
 console.log(arena.entity_count());
+
+const renderLoop = () => {
+    arena.tick();
+    space();
+    let entityCount = arena.entity_count();
+    for (let i=0; i<entityCount; i++) {
+        let x = arena.entity_render_instruction_x(i);
+        let y = arena.entity_render_instruction_y(i);
+        let r = arena.entity_render_instruction_r(i);
+        renderCircle(x, y, r);
+    }
+    requestAnimationFrame(renderLoop);
+};
+requestAnimationFrame(renderLoop);

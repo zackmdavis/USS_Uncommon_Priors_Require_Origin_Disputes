@@ -2,6 +2,8 @@ extern crate wasm_bindgen;
 
 use wasm_bindgen::prelude::*;
 
+const ARENA_WIDTH: f32 = 600.;
+const ARENA_HEIGHT: f32 = 400.;
 
 #[derive(Copy, Clone, Debug)]
 pub struct Position(f32, f32);
@@ -17,10 +19,10 @@ trait Entity {
 
     fn velocity(&self) -> Velocity;
 
-    fn tick(&mut self) -> Position {
+    fn next_position(&mut self) -> Position {
         let Position(x, y) = self.position();
         let Velocity(dx, dy) = self.velocity();
-        Position(x + dx, y + dy)
+        Position((x + dx) % ARENA_WIDTH, (y + dy) % ARENA_HEIGHT)
     }
 }
 
@@ -47,6 +49,10 @@ impl Ship {
     }
 
     fn orientation(&self) -> Orientation { self.orientation }
+
+    fn tick(&mut self) {
+        self.position = self.next_position();
+    }
 }
 
 #[wasm_bindgen]
@@ -65,7 +71,6 @@ impl Arena {
     }
 
     pub fn tick(&mut self) {
-        log("tick!");
         for ship in &mut self.ships {
             ship.tick();
         }
@@ -104,7 +109,10 @@ extern {
 }
 
 #[wasm_bindgen]
-pub fn new_arena() -> Arena {
+pub fn uncommon_priors_require_origin_disputes() -> Arena {
     log("Hello WASM world in console!");
-    Arena::new()
+    let mut arena = Arena::new();
+    let our_heroine = Ship::new();
+    arena.add_ship(our_heroine);
+    arena
 }
