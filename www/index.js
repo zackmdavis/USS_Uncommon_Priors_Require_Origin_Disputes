@@ -17,13 +17,20 @@ function space() {
 function renderCircle(x, y, r) {
     ctx.fillStyle = "#9040f0";
     ctx.beginPath();
-    ctx.arc(x, y, r, 0, 2 * Math.PI, false);
+    ctx.arc(x, y, r, 0, 2 * Math.PI);
+    ctx.fill();
+}
+
+function renderShip(x, y, r, o) {
+    ctx.fillStyle = "#a050f0";
+    ctx.beginPath();
+    ctx.arc(x, y, r, o - 0.85*Math.PI, o + 0.85*Math.PI, true);
+    ctx.lineTo(x, y);
     ctx.fill();
 }
 
 let arena = wasm.uncommon_priors_require_origin_disputes();
 arena.tick();
-console.log(arena.entity_count());
 
 const renderLoop = () => {
     arena.tick();
@@ -33,8 +40,26 @@ const renderLoop = () => {
         let x = arena.entity_render_instruction_x(i);
         let y = arena.entity_render_instruction_y(i);
         let r = arena.entity_render_instruction_r(i);
-        renderCircle(x, y, r);
+        let o = arena.entity_render_instruction_o(i);
+        renderShip(x, y, r, o);
     }
     requestAnimationFrame(renderLoop);
 };
 requestAnimationFrame(renderLoop);
+
+addEventListener('keydown', keyHandler);
+
+function keyHandler(event) {
+    if (event.code == "ArrowLeft") {
+        console.log("left!");
+        arena.input_left();
+    }
+    if (event.code == "ArrowRight") {
+        console.log("right!");
+        arena.input_right();
+    }
+    if (event.code == "ArrowUp") {
+        console.log("thrust!");
+        arena.input_thrust();
+    }
+}
