@@ -2,10 +2,12 @@ extern crate wasm_bindgen;
 
 use wasm_bindgen::prelude::*;
 
+mod agent;
 mod entity;
 mod ship;
 mod torpedo;
 
+use agent::{Agent, MarkI};
 use ship::Ship;
 use torpedo::Torpedo;
 use entity::{Position, Velocity, Orientation, Entity};
@@ -20,7 +22,7 @@ pub enum EntityType {
 #[wasm_bindgen]
 pub struct Arena {
     our_heroine: Ship,
-    ships: Vec<Ship>,
+    agents: Vec<Agent>,
     torpedos: Vec<Torpedo>
 }
 
@@ -28,14 +30,25 @@ pub struct Arena {
 impl Arena {
     fn new() -> Self {
         Arena {
-            our_heroine: Ship::new(),
-            ships: Vec::new(),
+            our_heroine: Ship::new(
+                Position(100., 100.),
+                Velocity(1., 1.),
+                Orientation(0.),
+                0.3
+            ),
+            agents: vec![
+                Agent {
+                    ship: Ship::new(
+                        Position(300., 250.),
+                        Velocity(0.1, -0.2),
+                        Orientation(0.),
+                        0.2
+                    ),
+                    ai: Box::new(MarkI{})
+                }
+            ],
             torpedos: Vec::new()
         }
-    }
-
-    fn add_ship(&mut self, ship: Ship) {
-        self.ships.push(ship);
     }
 
     fn add_torpedo(&mut self, torpedo: Torpedo) {
@@ -44,8 +57,9 @@ impl Arena {
 
     pub fn tick(&mut self) {
         self.our_heroine.tick();
-        for ship in &mut self.ships {
-            ship.tick();
+        for agent in &mut self.agents {
+            agent.ai.tick(&mut agent.ship);
+            agent.ship.tick();
         }
         for i in (0..self.torpedos.len()).rev() {
             self.torpedos[i].tick();
@@ -79,15 +93,15 @@ impl Arena {
     }
 
     pub fn entity_count(&self) -> u16 {
-        (1 + self.ships.len() + self.torpedos.len()) as u16
+        (1 + self.agents.len() + self.torpedos.len()) as u16
     }
 
     fn entity(&self, i: u16) -> (EntityType, &dyn Entity) {
-        let ship_count = self.ships.len() as u16;
+        let ship_count = self.agents.len() as u16;
         if i == 0 {
             (EntityType::OurHeroine, &self.our_heroine)
         } else if i >= 1 && i <= ship_count {
-            (EntityType::Ship, &self.ships[(i-1) as usize])
+            (EntityType::Ship, &self.agents[(i-1) as usize].ship)
         } else {
             (EntityType::Torpedo,
              &self.torpedos[(i-1-ship_count) as usize])
@@ -105,10 +119,14 @@ impl Arena {
     }
 
     pub fn entity_render_instruction_o(&self, i: u16) -> f32 {
-        match i {
-            0 => self.our_heroine.orientation().0,
-            // TODO: other ships
-            _ => 0. // dummy value
+        // XXX: code duplication
+        let ship_count = self.agents.len() as u16;
+        if i == 0 {
+            self.our_heroine.orientation().0
+        } else if i >= 1 && i <= ship_count {
+            self.agents[(i-1) as usize].ship.orientation().0
+        } else {
+            0. // dummy value
         }
     }
 
@@ -142,6 +160,6 @@ extern {
 #[wasm_bindgen]
 pub fn uncommon_priors_require_origin_disputes() -> Arena {
     log("Hello WASM world in console!");
-    let mut arena = Arena::new();
+    let arena = Arena::new();
     arena
 }

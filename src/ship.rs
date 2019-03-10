@@ -4,7 +4,7 @@ pub struct Ship {
     position: Position,
     velocity: Velocity,
     orientation: Orientation,
-    thrust_strength: f32
+    thrust_strength: f32,
 }
 
 impl Entity for Ship {
@@ -14,13 +14,9 @@ impl Entity for Ship {
 
 
 impl Ship {
-    pub fn new() -> Self {
-        Ship {
-            position: Position(100., 100.),
-            velocity: Velocity(1., 1.),
-            orientation: Orientation(0.),
-            thrust_strength: 0.3
-        }
+    pub fn new(position: Position, velocity: Velocity,
+               orientation: Orientation, thrust_strength: f32) -> Self {
+        Ship { position, velocity, orientation, thrust_strength}
     }
 
     pub fn orientation(&self) -> Orientation { self.orientation }
