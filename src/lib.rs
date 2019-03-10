@@ -24,6 +24,7 @@ trait Entity {
     }
 }
 
+
 struct Ship {
     position: Position,
     velocity: Velocity,
@@ -35,33 +36,75 @@ impl Entity for Ship {
     fn velocity(&self) -> Velocity { self.velocity }
 }
 
+
 impl Ship {
+    fn new() -> Self {
+        Ship {
+            position: Position(100., 100.),
+            velocity: Velocity(10., 10.),
+            orientation: Orientation(0.),
+        }
+    }
+
     fn orientation(&self) -> Orientation { self.orientation }
 }
 
-struct Arena {
+#[wasm_bindgen]
+pub struct Arena {
     ships: Vec<Ship>
 }
 
+#[wasm_bindgen]
 impl Arena {
-    fn tick(&mut self) {
+    fn new() -> Self {
+        Arena { ships: Vec::new() }
+    }
+
+    fn add_ship(&mut self, ship: Ship) {
+        self.ships.push(ship);
+    }
+
+    pub fn tick(&mut self) {
+        log("tick!");
         for ship in &mut self.ships {
             ship.tick();
         }
     }
-}
 
+    pub fn entity_count(&self) -> u16 {
+        self.ships.len() as u16
+    }
+
+    pub fn entity_render_instruction_x(&self, i: u16) -> f32 {
+        let entity = &self.ships[i as usize];
+        entity.position.0
+    }
+
+    pub fn entity_render_instruction_y(&self, i: u16) -> f32 {
+        let entity = &self.ships[i as usize];
+        entity.position.1
+    }
+
+    pub fn entity_render_instruction_r(&self, i: u16) -> f32 {
+        10.
+    }
+
+    pub fn entity_render_instruction_kind(&self, i: u16) -> u8 {
+        1
+    }
+
+}
 
 #[wasm_bindgen]
 extern {
     fn alert(s: &str);
-    // doesn't work </3
-    //
-    // fn renderCircle(x: f32, y: f32, r: f32);
+
+    #[wasm_bindgen(js_namespace = console)]
+    fn log(s: &str);
 }
 
 #[wasm_bindgen]
-pub fn rah() {
-    alert("hello, world??");
-    // renderCircle(100., 100., 10.);
+pub fn new_arena() -> Arena {
+    log("Hello WASM world in console!");
+    Arena::new()
 }
