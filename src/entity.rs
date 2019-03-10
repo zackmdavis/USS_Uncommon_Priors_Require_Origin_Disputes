@@ -1,4 +1,4 @@
-use std::ops::{AddAssign, SubAssign, Mul};
+use std::ops::{AddAssign, Sub, SubAssign, Mul};
 
 const ARENA_WIDTH: f32 = 600.;
 const ARENA_HEIGHT: f32 = 400.;
@@ -10,6 +10,25 @@ fn modulo(a: f32, b: f32) -> f32 {
 
 #[derive(Copy, Clone, Debug)]
 pub struct Position(pub f32, pub f32);
+
+impl Sub for Position {
+    type Output = Self;
+
+    fn sub(self, other: Position) -> Position {
+        Position(self.0 - other.0, self.1 - other.1)
+    }
+}
+
+impl Position {
+    pub fn distance_to(&self, other: Position) -> f32 {
+        ((self.0 - other.0).powi(2) + (self.1 - other.1).powi(2)).sqrt()
+    }
+
+    pub fn orientation_to(&self, other: Position) -> Orientation {
+        let displacement = other - *self;
+        Orientation((displacement.1/displacement.0).atan())
+    }
+}
 
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Velocity(pub f32, pub f32);
@@ -43,6 +62,14 @@ impl AddAssign for Orientation {
     }
 }
 
+impl Sub for Orientation {
+    type Output = Self;
+
+    fn sub(self, other: Orientation) -> Orientation {
+        Orientation(self.0 - other.0)
+    }
+}
+
 impl SubAssign for Orientation {
     fn sub_assign(&mut self, other: Orientation) {
         *self = Orientation(self.0 - other.0);
@@ -51,7 +78,8 @@ impl SubAssign for Orientation {
 
 impl Orientation {
     pub fn unit_velocity(&self) -> Velocity {
-        Velocity(self.0.cos(), self.0.sin())
+        let (dx, dy) = self.0.sin_cos();
+        Velocity(dx, dy)
     }
 }
 
@@ -69,13 +97,20 @@ pub trait Entity {
 
 #[cfg(test)]
 mod tests {
-    use super::Orientation;
+    use std::f32::consts::PI;
+    use super::{Orientation, Position};
 
     #[test]
-    fn test_add_orientation() {
+    fn concerning_adding_orientations() {
         let mut o = Orientation(0.);
         o += Orientation(0.1);
         assert_eq!(o, Orientation(0.1));
     }
 
+    #[test]
+    fn concerning_orientation_to() {
+        let origin = Position(0., 0.);
+        let x = Position(1., 1.);
+        assert_eq!(origin.orientation_to(x), Orientation(PI/4.));
+    }
 }

@@ -7,7 +7,7 @@ mod entity;
 mod ship;
 mod torpedo;
 
-use agent::{Agent, MarkI};
+use agent::{Agent, PatrolAI};
 use ship::Ship;
 use torpedo::Torpedo;
 use entity::{Position, Velocity, Orientation, Entity};
@@ -44,7 +44,8 @@ impl Arena {
                         Orientation(0.),
                         0.2
                     ),
-                    ai: Box::new(MarkI{})
+                    ai: Box::new(PatrolAI::new(vec![Position(100., 100.),
+                                                    Position(500., 350.)]))
                 }
             ],
             torpedos: Vec::new()
@@ -56,8 +57,10 @@ impl Arena {
     }
 
     pub fn tick(&mut self) {
+        // log(&format!("heroine orientation: {:?}", self.our_heroine.orientation()));
         self.our_heroine.tick();
         for agent in &mut self.agents {
+            // log(&format!("agent orientation: {:?}", agent.ship.orientation()));
             agent.ai.tick(&mut agent.ship);
             agent.ship.tick();
         }
