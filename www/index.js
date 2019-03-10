@@ -15,14 +15,14 @@ function space() {
 }
 
 function renderCircle(x, y, r) {
-    ctx.fillStyle = "#9040f0";
+    ctx.fillStyle = "#ffffff";
     ctx.beginPath();
     ctx.arc(x, y, r, 0, 2 * Math.PI);
     ctx.fill();
 }
 
-function renderShip(x, y, r, o) {
-    ctx.fillStyle = "#a050f0";
+function renderShip(x, y, r, o, color) {
+    ctx.fillStyle = color;
     ctx.beginPath();
     ctx.arc(x, y, r, o - 0.85*Math.PI, o + 0.85*Math.PI, true);
     ctx.lineTo(x, y);
@@ -30,18 +30,28 @@ function renderShip(x, y, r, o) {
 }
 
 let arena = wasm.uncommon_priors_require_origin_disputes();
-arena.tick();
 
 const renderLoop = () => {
     arena.tick();
     space();
     let entityCount = arena.entity_count();
     for (let i=0; i<entityCount; i++) {
+        let kind = arena.entity_render_instruction_kind(i);
         let x = arena.entity_render_instruction_x(i);
         let y = arena.entity_render_instruction_y(i);
         let r = arena.entity_render_instruction_r(i);
         let o = arena.entity_render_instruction_o(i);
-        renderShip(x, y, r, o);
+        switch (kind) {
+        case 1: // our heroine
+            renderShip(x, y, r, o, "#a050f0");
+            break;
+        case 2: // other ship
+            renderShip(x, y, r, o, "#c0c0c0");
+            break;
+        case 3: // torpedo
+            renderCircle(x, y, r);
+            break;
+        }
     }
     requestAnimationFrame(renderLoop);
 };
@@ -50,16 +60,19 @@ requestAnimationFrame(renderLoop);
 addEventListener('keydown', keyHandler);
 
 function keyHandler(event) {
-    if (event.code == "ArrowLeft") {
-        console.log("left!");
+    console.log(event.code);
+    switch (event.code) {
+    case "ArrowLeft":
         arena.input_left();
-    }
-    if (event.code == "ArrowRight") {
-        console.log("right!");
+        break;
+    case "ArrowRight":
         arena.input_right();
-    }
-    if (event.code == "ArrowUp") {
-        console.log("thrust!");
+        break;
+    case "ArrowUp":
         arena.input_thrust();
+        break;
+    case "Space":
+        arena.input_fire();
+        break;
     }
 }
