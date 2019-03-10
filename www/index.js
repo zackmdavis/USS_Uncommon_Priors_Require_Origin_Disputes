@@ -1,4 +1,4 @@
-console.log("Hello Webpack World!");
+import * as wasm from "uss_uncommon_priors";
 
 let canvas = document.createElement("canvas");
 canvas.setAttribute("width", 600);
@@ -14,8 +14,5 @@ function renderCircle(x, y, r) {
     ctx.fill();
 }
 
-const wasm = import("../build/uss_uncommon_priors");
-
-wasm.then(wasm => {
-    wasm.rah();
-});
+wasm.rah();
+renderCircle(200, 200, 30);

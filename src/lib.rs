@@ -62,6 +62,6 @@ extern {
 
 #[wasm_bindgen]
 pub fn rah() {
-    alert("hello");
+    alert("hello, world??");
     // renderCircle(100., 100., 10.);
 }
