@@ -26,10 +26,7 @@ impl Ship {
     pub fn orientation(&self) -> Orientation { self.orientation }
 
     pub fn thrust(&mut self) {
-        let Velocity(mut dx, mut dy) = self.velocity;
-        dx += self.thrust_strength * self.orientation.0.cos();
-        dy += self.thrust_strength * self.orientation.0.sin();
-        self.velocity = Velocity(dx, dy);
+        self.velocity += self.orientation.unit_velocity() * self.thrust_strength;
     }
 
     pub fn reorient_left(&mut self) {

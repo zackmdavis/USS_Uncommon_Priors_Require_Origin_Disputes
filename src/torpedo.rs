@@ -2,7 +2,8 @@ use entity::{Position, Velocity, Entity};
 
 pub struct Torpedo {
     position: Position,
-    velocity: Velocity
+    velocity: Velocity,
+    timer: usize
 }
 
 impl Entity for Torpedo {
@@ -12,10 +13,15 @@ impl Entity for Torpedo {
 
 impl Torpedo {
     pub fn new(position: Position, velocity: Velocity) -> Self {
-        Self { position, velocity }
+        Self { position, velocity, timer: 500 }
     }
 
     pub fn tick(&mut self) {
         self.position = self.next_position();
+        self.timer -= 1;
+    }
+
+    pub fn boom(&self) -> bool {
+        self.timer == 0
     }
 }

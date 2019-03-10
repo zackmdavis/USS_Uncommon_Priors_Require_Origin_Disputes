@@ -47,8 +47,11 @@ impl Arena {
         for ship in &mut self.ships {
             ship.tick();
         }
-        for torpedo in &mut self.torpedos {
-            torpedo.tick();
+        for i in (0..self.torpedos.len()).rev() {
+            self.torpedos[i].tick();
+            if self.torpedos[i].boom() {
+                self.torpedos.swap_remove(i);
+            }
         }
     }
 
@@ -65,13 +68,12 @@ impl Arena {
     }
 
     pub fn input_fire(&mut self) {
-        let Velocity(mut dx, mut dy) = self.our_heroine.velocity();
-        dx += 0.7 * self.our_heroine.orientation().0.cos();
-        dy += 0.7 * self.our_heroine.orientation().0.sin();
+        let mut velocity = self.our_heroine.velocity();
+        velocity += self.our_heroine.orientation().unit_velocity() * 0.7;
         let torpedo = Torpedo::new(
             // TODO: slight displacement?!
             self.our_heroine.position(),
-            Velocity(dx, dy)
+            velocity
         );
         self.add_torpedo(torpedo);
     }
