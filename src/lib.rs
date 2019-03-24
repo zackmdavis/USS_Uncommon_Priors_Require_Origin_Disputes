@@ -7,10 +7,10 @@ mod entity;
 mod ship;
 mod torpedo;
 
-use agent::{Agent, PatrolAI};
-use ship::Ship;
-use torpedo::Torpedo;
-use entity::{Position, Velocity, Orientation, Entity};
+use crate::agent::{Agent, PatrolAI};
+use crate::ship::Ship;
+use crate::torpedo::Torpedo;
+use crate::entity::{Position, Velocity, Orientation, Entity};
 
 
 pub enum EntityType {

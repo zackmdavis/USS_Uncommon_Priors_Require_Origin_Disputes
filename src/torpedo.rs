@@ -1,4 +1,4 @@
-use entity::{Position, Velocity, Entity};
+use crate::entity::{Position, Velocity, Entity};
 
 pub struct Torpedo {
     position: Position,

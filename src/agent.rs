@@ -1,5 +1,5 @@
-use entity::{Entity, Position};
-use ship::Ship;
+use crate::entity::{Entity, Position};
+use crate::ship::Ship;
 
 pub struct Agent {
     pub ship: Ship,

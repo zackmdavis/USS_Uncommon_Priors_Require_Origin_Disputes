@@ -2,6 +2,7 @@
 name = "uss_uncommon_priors"
 version = "0.0.1"
 authors = ["Zack M. Davis <code@zackmdavis.net>"]
+edition = "2018"
 
 [lib]
 crate-type = ["cdylib"]

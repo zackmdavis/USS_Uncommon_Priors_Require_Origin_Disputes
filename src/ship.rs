@@ -1,4 +1,4 @@
-use entity::{Position, Velocity, Orientation, Entity};
+use crate::entity::{Position, Velocity, Orientation, Entity};
 
 pub struct Ship {
     position: Position,
