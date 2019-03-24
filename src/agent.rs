@@ -3,7 +3,7 @@ use crate::ship::Ship;
 
 pub struct Agent {
     pub ship: Ship,
-    pub ai: Box<AI>
+    pub ai: Box<dyn AI>
 }
 
 pub trait AI {
