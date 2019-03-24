@@ -44,6 +44,8 @@ const renderLoop = () => {
         switch (kind) {
         case 1: // our heroine
             renderShip(x, y, r, o, "#a050f0");
+            let dash = document.getElementById("heroine-dash");
+            dash.textContent = `x=${x.toFixed(2)} y=${y.toFixed(2)} θ=${o.toFixed(2)}`;
             break;
         case 2: // other ship
             renderShip(x, y, r, o, "#c0c0c0");
@@ -60,7 +62,6 @@ requestAnimationFrame(renderLoop);
 addEventListener('keydown', keyHandler);
 
 function keyHandler(event) {
-    console.log(event.code);
     switch (event.code) {
     case "ArrowLeft":
         arena.input_left();
