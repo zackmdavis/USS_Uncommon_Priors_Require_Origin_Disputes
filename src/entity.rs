@@ -39,6 +39,15 @@ impl AddAssign for Velocity {
     }
 }
 
+impl Sub for Velocity {
+    type Output = Self;
+
+    fn sub(self, other: Velocity) -> Velocity {
+        Velocity(self.0 - other.0, self.1 - other.1)
+    }
+
+}
+
 impl SubAssign for Velocity {
     fn sub_assign(&mut self, other: Velocity) {
         *self = Velocity(self.0 - other.0, self.0 - other.1);

@@ -25,7 +25,6 @@ impl PatrolAI {
 
 impl AI for PatrolAI {
     fn tick(&mut self, ship: &mut Ship) {
-        use super::log;
         let waypoint = self.waypoints[self.next];
         // log(&format!("{:?}", waypoint));
         if waypoint.distance_to(ship.position()) < 100. {

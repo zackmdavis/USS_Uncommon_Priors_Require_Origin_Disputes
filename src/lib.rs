@@ -32,7 +32,7 @@ impl Arena {
         Arena {
             our_heroine: Ship::new(
                 Position(100., 100.),
-                Velocity(1., 1.),
+                Velocity(0., 0.),
                 Orientation(0.),
                 0.3
             ),
@@ -151,6 +151,7 @@ impl Arena {
     }
 
 }
+
 
 #[wasm_bindgen]
 extern {
