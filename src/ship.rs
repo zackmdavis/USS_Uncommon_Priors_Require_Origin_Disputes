@@ -3,7 +3,8 @@ use crate::entity::{Position, Velocity, Orientation, Entity};
 pub struct Ship {
     position: Position,
     velocity: Velocity,
-    orientation: Orientation,
+    // XXX: arbitrarily settable orientation is a hack
+    pub orientation: Orientation,
     thrust_strength: f32,
 }
 

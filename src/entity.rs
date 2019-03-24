@@ -1,4 +1,5 @@
-use std::ops::{AddAssign, Sub, SubAssign, Mul};
+use std::f32::consts::PI;
+use std::ops::{AddAssign, Sub, SubAssign, Mul, Neg};
 
 const ARENA_WIDTH: f32 = 600.;
 const ARENA_HEIGHT: f32 = 400.;
@@ -62,6 +63,17 @@ impl Mul<f32> for Velocity {
     }
 }
 
+impl Velocity {
+    pub fn abs(&self) -> f32 {
+        (self.0.powi(2) + self.1.powi(2)).sqrt()
+    }
+
+    pub fn countering_orientation(&self) -> Orientation {
+        -Orientation(self.1.atan2(self.0))
+    }
+}
+
+// TODO: restrict to [0, 2π)
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Orientation(pub f32);
 
@@ -82,6 +94,14 @@ impl Sub for Orientation {
 impl SubAssign for Orientation {
     fn sub_assign(&mut self, other: Orientation) {
         *self = Orientation(self.0 - other.0);
+    }
+}
+
+impl Neg for Orientation {
+    type Output = Self;
+
+    fn neg(self) -> Orientation {
+        Orientation(self.0 + PI)
     }
 }
 
@@ -148,5 +168,11 @@ mod tests {
             assert_eq_within_eps!(expected.0, actual.0, 0.0001);
             assert_eq_within_eps!(expected.1, actual.1, 0.0001);
         }
+    }
+
+    #[test]
+    fn concerning_countering_orientation() {
+        let w = Velocity(-1., -1.).countering_orientation();
+        assert_eq_within_eps!(w.0, PI/4., 0.0001);
     }
 }

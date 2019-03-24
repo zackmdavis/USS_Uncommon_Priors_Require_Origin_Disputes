@@ -26,23 +26,21 @@ impl PatrolAI {
 impl AI for PatrolAI {
     fn tick(&mut self, ship: &mut Ship) {
         let waypoint = self.waypoints[self.next];
-        // log(&format!("{:?}", waypoint));
         if waypoint.distance_to(ship.position()) < 100. {
             self.next = (self.next + 1) % self.waypoints.len();
             return;
         }
         let _distance_to_waypoint = ship.position().distance_to(waypoint);
         let orientation_to_waypoint = ship.position().orientation_to(waypoint);
-        // log(&format!("orientation to waypoint {:?}", orientation_to_waypoint));
-        let orientation_diff = orientation_to_waypoint - ship.orientation();
-        if orientation_diff.0 < 0. {
-            ship.reorient_left();
+
+        if ship.velocity().abs() < 1. {
+            ship.orientation = orientation_to_waypoint;
+            ship.thrust();
         } else {
-            ship.reorient_right();
+            // slow down
+            ship.orientation = ship.velocity().countering_orientation();
+            ship.thrust();
         }
-        // if we're pointed in the right direction, thrust
-        // if orientation_diff.0 < 0.01 {
-        //     ship.thrust();
-        // }
+
     }
 }
