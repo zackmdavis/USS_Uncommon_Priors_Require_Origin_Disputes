@@ -78,7 +78,7 @@ impl SubAssign for Orientation {
 
 impl Orientation {
     pub fn unit_velocity(&self) -> Velocity {
-        let (dx, dy) = self.0.sin_cos();
+        let (dy, dx) = self.0.sin_cos();
         Velocity(dx, dy)
     }
 }
@@ -98,7 +98,22 @@ pub trait Entity {
 #[cfg(test)]
 mod tests {
     use std::f32::consts::PI;
-    use super::{Orientation, Position};
+    use super::{Orientation, Position, Velocity};
+
+    // XXX TODO FIXME: what am I failing to understand about macro imports?
+    macro_rules! assert_eq_within_eps {
+        // crude edit of the canonical `assert_eq!`
+        ($left:expr, $right:expr, $eps:expr) => ({
+            match (&($left), &($right)) {
+                (left_val, right_val) => {
+                    if (*left_val - *right_val).abs() > $eps {
+                        panic!("assertion failed: left and right not within ε={} \
+                                (left: `{:?}`, right: `{:?}`)", $eps, left_val, right_val)
+                    }
+                }
+            }
+        })
+    }
 
     #[test]
     fn concerning_adding_orientations() {
@@ -112,5 +127,17 @@ mod tests {
         let origin = Position(0., 0.);
         let x = Position(1., 1.);
         assert_eq!(origin.orientation_to(x), Orientation(PI/4.));
+    }
+
+    #[test]
+    fn concerning_unit_velocity() {
+        let cases = vec![
+            (Orientation(0.).unit_velocity(), Velocity(1., 0.)),
+            (Orientation(PI).unit_velocity(), Velocity(-1., 0.)),
+        ];
+        for (actual, expected) in cases {
+            assert_eq_within_eps!(expected.0, actual.0, 0.0001);
+            assert_eq_within_eps!(expected.1, actual.1, 0.0001);
+        }
     }
 }
