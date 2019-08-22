@@ -1,3 +1,4 @@
+use crate::log;
 use crate::entity::{Entity, Position};
 use crate::ship::Ship;
 
@@ -26,8 +27,9 @@ impl PatrolAI {
 impl AI for PatrolAI {
     fn tick(&mut self, ship: &mut Ship) {
         let waypoint = self.waypoints[self.next];
-        if waypoint.distance_to(ship.position()) < 100. {
+        if waypoint.distance_to(ship.position()) < 20. {
             self.next = (self.next + 1) % self.waypoints.len();
+            log(&format!("heading to next waypoint {:?}", self.waypoints[self.next]));
             return;
         }
         let _distance_to_waypoint = ship.position().distance_to(waypoint);

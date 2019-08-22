@@ -45,7 +45,10 @@ impl Arena {
                         0.2
                     ),
                     ai: Box::new(PatrolAI::new(vec![Position(100., 100.),
-                                                    Position(500., 350.)]))
+                                                    Position(100., 300.),
+                                                    Position(500., 300.),
+                                                    Position(500., 100.),
+                    ]))
                 }
             ],
             torpedos: Vec::new()
