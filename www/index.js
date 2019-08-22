@@ -1,17 +1,46 @@
 import * as wasm from "uss_uncommon_priors";
 
 let canvas = document.createElement("canvas");
-canvas.setAttribute("width", 600);
-canvas.setAttribute("height", 400);
+let width = 600;
+let height = 400;
+canvas.setAttribute("width", width);
+canvas.setAttribute("height", height);
 
 let body = document.getElementsByTagName("body")[0];
 body.appendChild(canvas);
 
 let ctx = canvas.getContext("2d");
 
+function line(direction, mark) {
+    let start_x, start_y, end_x, end_y;
+    switch (direction) {
+    case "horizontal":
+        start_x = 0;
+        end_x = width;
+        start_y = end_y = mark;
+        break;
+    case "vertical":
+        start_y = 0;
+        end_y = height;
+        start_x = end_x = mark;
+        break;
+    }
+    ctx.strokeStyle = "#00b0a0";
+    ctx.beginPath();
+    ctx.moveTo(start_x, start_y);
+    ctx.lineTo(end_x, end_y);
+    ctx.stroke();
+}
+
 function space() {
     ctx.fillStyle = "black";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
+    for (let i = 0; i<width/100; i++) {
+        line("vertical", i*100);
+    }
+    for (let j = 0; j<height/100; j++) {
+        line("horizontal", j*100);
+    }
 }
 
 function renderCircle(x, y, r) {
