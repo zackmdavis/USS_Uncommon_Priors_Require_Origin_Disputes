@@ -1,4 +1,4 @@
-use crate::entity::{Position, Velocity, Orientation, Entity};
+use crate::entity::{Position, Velocity, Orientation, Spin, Entity};
 
 pub struct Ship {
     position: Position,
@@ -27,11 +27,11 @@ impl Ship {
     }
 
     pub fn reorient_left(&mut self) {
-        self.orientation -= Orientation(0.1);
+        self.orientation = self.orientation + Spin(-0.1);
     }
 
     pub fn reorient_right(&mut self) {
-        self.orientation += Orientation(0.1);
+        self.orientation = self.orientation + Spin(0.1);
     }
 
     pub fn tick(&mut self) {

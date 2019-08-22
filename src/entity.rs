@@ -1,5 +1,5 @@
 use std::f32::consts::PI;
-use std::ops::{AddAssign, Sub, SubAssign, Mul, Neg};
+use std::ops::{Add, AddAssign, Sub, SubAssign, Mul, Neg};
 
 const ARENA_WIDTH: f32 = 600.;
 const ARENA_HEIGHT: f32 = 400.;
@@ -73,27 +73,25 @@ impl Velocity {
     }
 }
 
-// TODO: restrict to [0, 2π)
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Orientation(pub f32);
+#[derive(Copy, Clone, Debug, PartialEq)]
+pub struct Spin(pub f32);
 
-impl AddAssign for Orientation {
-    fn add_assign(&mut self, other: Orientation) {
-        *self = Orientation(self.0 + other.0);
+
+impl Add<Spin> for Orientation {
+    type Output = Self;
+
+    fn add(self, other: Spin) -> Self {
+        Orientation(modulo(self.0 + other.0, 2.*PI))
     }
 }
 
 impl Sub for Orientation {
-    type Output = Self;
+    type Output = Spin;
 
-    fn sub(self, other: Orientation) -> Orientation {
-        Orientation(self.0 - other.0)
-    }
-}
-
-impl SubAssign for Orientation {
-    fn sub_assign(&mut self, other: Orientation) {
-        *self = Orientation(self.0 - other.0);
+    fn sub(self, other: Orientation) -> Spin {
+        Spin(self.0 - other.0)
     }
 }
 
@@ -101,7 +99,7 @@ impl Neg for Orientation {
     type Output = Self;
 
     fn neg(self) -> Orientation {
-        Orientation(self.0 + PI)
+        Orientation(modulo(self.0 + PI, 2.*PI))
     }
 }
 
