@@ -1,6 +1,8 @@
 use crate::log;
-use crate::entity::{Entity, Position};
+use crate::entity::{Entity, Position, Spin};
 use crate::ship::Ship;
+
+const CRUISING_SPEED: f32 = 1.;
 
 pub struct Agent {
     pub ship: Ship,
@@ -14,8 +16,11 @@ pub trait AI {
 
 #[derive(Debug)]
 enum Mode {
-    Stopping,
-    Seeking,
+    Orient,
+    Accel,
+    Glide,
+    Disorient,
+    Deaccel,
 }
 
 pub struct PatrolAI {
@@ -26,53 +31,89 @@ pub struct PatrolAI {
 
 impl PatrolAI {
     pub fn new(waypoints: Vec<Position>) -> Self {
-        PatrolAI { waypoints, next: 0, mode: Mode::Stopping }
+        PatrolAI { waypoints, next: 0, mode: Mode::Orient }
+    }
+
+    pub fn orient(&mut self, ship: &mut Ship) {
+        let heading = ship.position().orientation_to(self.waypoints[self.next]);
+        let diff: Spin = heading - ship.orientation();
+        log(&format!("heading is {:?}", heading));
+        log(&format!("orientation is {:?}", ship.orientation()));
+        log(&format!("diff is {:?}", diff));
+        if diff.0.abs() < 0.1 {
+            log("switching to Accel mode");
+            self.mode = Mode::Accel;
+            return;
+        }
+        if diff.0 > 0. {
+            ship.reorient_right();
+        } else {
+            ship.reorient_left();
+        }
+    }
+
+    pub fn accel(&mut self, ship: &mut Ship) {
+        if ship.velocity().abs() < CRUISING_SPEED {
+            ship.thrust();
+        } else {
+            log("switching to Glide mode");
+            self.mode = Mode::Glide;
+        }
+    }
+
+    pub fn glide(&mut self, ship: &mut Ship) {
+        // TODO: compute correct slowdown distance
+        if ship.position().distance_to(self.waypoints[self.next]) < 50. {
+            log("switching to Disorient mode");
+            self.mode = Mode::Disorient;
+        }
+    }
+
+    pub fn disorient(&mut self, ship: &mut Ship) {
+        let heading = ship.velocity().countering_orientation();
+        let diff: Spin = heading - ship.orientation();
+        if diff.0.abs() < 0.1 {
+            log("switching to Deaccel mode");
+            self.mode = Mode::Deaccel;
+            return;
+        }
+        if diff.0 > 0. {
+            ship.reorient_right();
+        } else {
+            ship.reorient_left();
+        }
+    }
+
+    pub fn deaccel(&mut self, ship: &mut Ship) {
+        if ship.velocity().abs() > 0.1 {
+            ship.thrust();
+        } else {
+            log("switching to Orient mode for next waypoint!");
+            self.next = (self.next + 1) % self.waypoints.len();
+            self.mode = Mode::Orient;
+        }
     }
 }
 
 impl AI for PatrolAI {
 
     fn tick(&mut self, ship: &mut Ship) {
-        log(&format!("{:?}", self.mode));
         match self.mode {
-            Mode::Stopping => {
-                let desired_orientation = ship.velocity().countering_orientation();
-                let orientation_diff = desired_orientation - ship.orientation();
-                if orientation_diff.0 > 0. {
-                    ship.reorient_left();
-                } else {
-                    ship.reorient_right();
-                }
-
-                if orientation_diff.0.abs() < 0.1 {
-                    ship.thrust()
-                }
-
-                if ship.velocity().abs() < 0.3 {
-                    self.next = (self.next + 1) % self.waypoints.len();
-                    log(&format!("heading to next waypoint {:?}", self.waypoints[self.next]));
-                    self.mode = Mode::Seeking;
-                }
-            }
-            Mode::Seeking => {
-                let waypoint = self.waypoints[self.next];
-                if waypoint.distance_to(ship.position()) < 20. {
-                    self.mode = Mode::Stopping;
-                }
-
-                let desired_orientation = ship.position().orientation_to(waypoint);
-                let orientation_diff = ship.orientation() - desired_orientation;
-                // log(&format!("{:?}", orientation_diff));
-                if orientation_diff.0 > 0. {
-                    ship.reorient_left();
-                } else {
-                    ship.reorient_right();
-                }
-
-                if orientation_diff.0.abs() < 0.2 && ship.velocity().abs() < 1. {
-                    ship.thrust()
-                }
-            }
+            Mode::Orient => {
+                self.orient(ship);
+            },
+            Mode::Accel => {
+                self.accel(ship);
+            },
+            Mode::Glide => {
+                self.glide(ship);
+            },
+            Mode::Disorient => {
+                self.disorient(ship);
+            },
+            Mode::Deaccel => {
+                self.deaccel(ship);
+            },
         }
     }
 

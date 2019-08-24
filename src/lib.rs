@@ -39,9 +39,9 @@ impl Arena {
             agents: vec![
                 Agent {
                     ship: Ship::new(
-                        Position(300., 250.),
-                        Velocity(0.1, -0.2),
-                        Orientation(0.),
+                        Position(100., 150.),
+                        Velocity(0., 0.),
+                        Orientation(-3.),
                         0.2
                     ),
                     ai: Box::new(PatrolAI::new(vec![Position(100., 100.),

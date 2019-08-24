@@ -91,7 +91,13 @@ impl Sub for Orientation {
     type Output = Spin;
 
     fn sub(self, other: Orientation) -> Spin {
-        Spin(self.0 - other.0)
+        let raw = self.0 - other.0;
+        if raw.abs() > PI {
+            // TODO: simplify?! (formula discovered "empirically")
+            Spin(-1. * ((2.*PI).copysign(raw) - raw))
+        } else {
+            Spin(raw)
+        }
     }
 }
 
@@ -110,6 +116,20 @@ impl Orientation {
     }
 }
 
+impl Sub for Spin {
+    type Output = Self;
+
+    fn sub(self, other: Spin) -> Spin {
+        Spin(self.0 - other.0)
+    }
+}
+
+impl Spin {
+    fn abs(&self) -> f32 {
+        self.0.abs()
+    }
+}
+
 pub trait Entity {
     fn position(&self) -> Position;
 
@@ -125,7 +145,7 @@ pub trait Entity {
 #[cfg(test)]
 mod tests {
     use std::f32::consts::PI;
-    use super::{Orientation, Position, Velocity};
+    use super::{Orientation, Position, Velocity, Spin};
 
     // XXX TODO FIXME: what am I failing to understand about macro imports?
     macro_rules! assert_eq_within_eps {
@@ -140,13 +160,6 @@ mod tests {
                 }
             }
         })
-    }
-
-    #[test]
-    fn concerning_adding_orientations() {
-        let mut o = Orientation(0.);
-        o += Orientation(0.1);
-        assert_eq!(o, Orientation(0.1));
     }
 
     #[test]
@@ -173,4 +186,31 @@ mod tests {
         let w = Velocity(-1., -1.).countering_orientation();
         assert_eq_within_eps!(w.0, PI/4., 0.0001);
     }
+
+    #[test]
+    fn concerning_orientation_differences_wtf() {
+        // Need to consistently report minimal spin (no branch
+        // discontinuity at zero)
+        assert_eq_within_eps!(
+            Orientation(0.4) - Orientation(0.2),
+            Spin(0.2),
+            0.001
+        );
+        assert_eq_within_eps!(
+            Orientation(0.2) - Orientation(0.4),
+            Spin(-0.2),
+            0.001
+        );
+        assert_eq_within_eps!(
+             Orientation(2.*PI - 0.1) - Orientation(0.1),
+            Spin(-0.2),
+            0.001
+        );
+        assert_eq_within_eps!(
+            Orientation(0.1) - Orientation(2.*PI - 0.1),
+            Spin(0.2),
+            0.001
+        );
+    }
+
 }
