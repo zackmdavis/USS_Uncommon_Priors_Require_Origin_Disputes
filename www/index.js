@@ -70,16 +70,17 @@ const renderLoop = () => {
         let y = arena.entity_render_instruction_y(i);
         let r = arena.entity_render_instruction_r(i);
         let o = arena.entity_render_instruction_o(i);
+        let s = arena.entity_render_instruction_shields(i);
         switch (kind) {
         case 1: // our heroine
             renderShip(x, y, r, o, "#a050f0");
             let dash = document.getElementById("heroine-dash");
-            dash.textContent = `x=${x.toFixed(2)} y=${y.toFixed(2)} θ=${o.toFixed(2)}`;
+            dash.textContent = `x=${x.toFixed(2)} y=${y.toFixed(2)} θ=${o.toFixed(2)} shields=${s.toFixed(2)}`;
             break;
         case 2: // other ship
             renderShip(x, y, r, o, "#c0c0c0");
             let enemy_dash = document.getElementById("enemy-dash");
-            enemy_dash.textContent = `x=${x.toFixed(2)} y=${y.toFixed(2)} θ=${o.toFixed(2)}`;
+            enemy_dash.textContent = `x=${x.toFixed(2)} y=${y.toFixed(2)} θ=${o.toFixed(2)} shields=${s.toFixed(2)}`;
             break;
         case 3: // torpedo
             renderCircle(x, y, r);

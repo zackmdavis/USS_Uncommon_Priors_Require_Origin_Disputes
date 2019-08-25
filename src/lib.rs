@@ -156,6 +156,18 @@ impl Arena {
             EntityType::Torpedo => 3
         }
     }
+
+    pub fn entity_render_instruction_shields(&self, i: u16) -> f32 {
+        // XXX: code duplication
+        let ship_count = self.agents.len() as u16;
+        if i == 0 {
+            self.our_heroine.shields()
+        } else if i >= 1 && i <= ship_count {
+            self.agents[(i-1) as usize].ship.shields()
+        } else {
+            0. // dummy value
+        }
+    }
 }
 
 
