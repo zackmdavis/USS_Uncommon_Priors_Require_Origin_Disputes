@@ -72,7 +72,7 @@ impl PatrolAI {
     pub fn disorient(&mut self, ship: &mut Ship) {
         let heading = ship.velocity().countering_orientation();
         let diff: Spin = heading - ship.orientation();
-        if diff.0.abs() < 0.1 {
+        if diff.0.abs() <= 0.05 {
             log("switching to Deaccel mode");
             self.mode = Mode::Deaccel;
             return;
