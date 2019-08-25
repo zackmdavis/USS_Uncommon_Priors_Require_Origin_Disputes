@@ -1,11 +1,13 @@
 use crate::entity::{Position, Velocity, Orientation, Spin, Entity};
 
 pub struct Ship {
+    name: String,
     position: Position,
     velocity: Velocity,
     // XXX: arbitrarily settable orientation is a hack
     pub orientation: Orientation,
     thrust_strength: f32,
+    shields: f32,
 }
 
 impl Entity for Ship {
@@ -15,14 +17,16 @@ impl Entity for Ship {
 
 
 impl Ship {
-    pub fn new(position: Position, velocity: Velocity,
-               orientation: Orientation, thrust_strength: f32) -> Self {
-        Ship { position, velocity, orientation, thrust_strength}
+    pub fn new(name: String, position: Position, velocity: Velocity,
+               orientation: Orientation, thrust_strength: f32, shields: f32) -> Self {
+        Ship { name, position, velocity, orientation, thrust_strength, shields }
     }
 
     pub fn orientation(&self) -> Orientation { self.orientation }
 
     pub fn thrust_strength(&self) -> f32 { self.thrust_strength }
+
+    pub fn shields(&self) -> f32 { self.shields }
 
     pub fn thrust(&mut self) {
         self.velocity += self.orientation.unit_velocity() * self.thrust_strength;

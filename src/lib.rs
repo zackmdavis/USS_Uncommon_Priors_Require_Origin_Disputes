@@ -31,18 +31,22 @@ impl Arena {
     fn new() -> Self {
         Arena {
             our_heroine: Ship::new(
+                "Uncommon Priors Require Origin Disputes".to_owned(),
                 Position(100., 100.),
                 Velocity(0., 0.),
                 Orientation(0.),
-                0.3
+                0.3,
+                100.
             ),
             agents: vec![
                 Agent {
                     ship: Ship::new(
+                        "Discovery".to_owned(),
                         Position(100., 150.),
                         Velocity(0., 0.),
                         Orientation(-3.),
-                        0.2
+                        0.2,
+                        100.
                     ),
                     ai: Box::new(PatrolAI::new(vec![Position(100., 100.),
                                                     Position(100., 300.),
@@ -152,7 +156,6 @@ impl Arena {
             EntityType::Torpedo => 3
         }
     }
-
 }
 
 

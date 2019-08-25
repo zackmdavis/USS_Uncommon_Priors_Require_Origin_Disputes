@@ -78,6 +78,8 @@ const renderLoop = () => {
             break;
         case 2: // other ship
             renderShip(x, y, r, o, "#c0c0c0");
+            let enemy_dash = document.getElementById("enemy-dash");
+            enemy_dash.textContent = `x=${x.toFixed(2)} y=${y.toFixed(2)} θ=${o.toFixed(2)}`;
             break;
         case 3: // torpedo
             renderCircle(x, y, r);
