@@ -22,6 +22,8 @@ impl Ship {
 
     pub fn orientation(&self) -> Orientation { self.orientation }
 
+    pub fn thrust_strength(&self) -> f32 { self.thrust_strength }
+
     pub fn thrust(&mut self) {
         self.velocity += self.orientation.unit_velocity() * self.thrust_strength;
     }

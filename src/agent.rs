@@ -61,9 +61,24 @@ impl PatrolAI {
         }
     }
 
+    fn slowdown_distance(&mut self, ship: &mut Ship) -> f32 {
+        let heading = ship.velocity().countering_orientation();
+        let orientation_diff = heading - ship.orientation();
+        // XXX: reorientation magic number
+        let turnaround_ticks = orientation_diff.0.abs() / 0.1;
+
+        let speed = ship.velocity().abs();
+        let deaccel_ticks = speed / ship.thrust_strength();
+        let ticks = turnaround_ticks + deaccel_ticks;
+        // XXX approximation (correct answer would need to integrate
+        // over slowdown): ticks * (distance/tick) = distance
+        ticks * speed
+    }
+
     pub fn glide(&mut self, ship: &mut Ship) {
-        // TODO: compute correct slowdown distance
-        if ship.position().distance_to(self.waypoints[self.next]) < 50. {
+        let slowdown_distance = self.slowdown_distance(ship);
+        log(&format!("slowdown distance is {:?}", slowdown_distance));
+        if ship.position().distance_to(self.waypoints[self.next]) < slowdown_distance {
             log("switching to Disorient mode");
             self.mode = Mode::Disorient;
         }
