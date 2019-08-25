@@ -64,16 +64,21 @@ impl Arena {
     }
 
     pub fn tick(&mut self) {
-        // log(&format!("heroine orientation: {:?}", self.our_heroine.orientation()));
         self.our_heroine.tick();
         for agent in &mut self.agents {
-            // log(&format!("agent orientation: {:?}", agent.ship.orientation()));
             agent.ai.tick(&mut agent.ship);
             agent.ship.tick();
         }
         for i in (0..self.torpedos.len()).rev() {
+            let mut boom = false;
             self.torpedos[i].tick();
-            if self.torpedos[i].boom() {
+            for agent in &mut self.agents {
+                if self.torpedos[i].position().distance_to(agent.ship.position()) < 10. {
+                    agent.ship.shields -= 9.1;
+                    boom = true;
+                }
+            }
+            if self.torpedos[i].expired() || boom{
                 self.torpedos.swap_remove(i);
             }
         }

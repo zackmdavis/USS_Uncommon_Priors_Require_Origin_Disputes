@@ -16,12 +16,14 @@ impl Torpedo {
         Self { position, velocity, timer: 500 }
     }
 
+    pub fn position(&self) -> Position { self.position }
+
     pub fn tick(&mut self) {
         self.position = self.next_position();
         self.timer -= 1;
     }
 
-    pub fn boom(&self) -> bool {
+    pub fn expired(&self) -> bool {
         self.timer == 0
     }
 }

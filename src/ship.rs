@@ -7,7 +7,7 @@ pub struct Ship {
     // XXX: arbitrarily settable orientation is a hack
     pub orientation: Orientation,
     thrust_strength: f32,
-    shields: f32,
+    pub shields: f32,
 }
 
 impl Entity for Ship {
