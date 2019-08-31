@@ -15,7 +15,7 @@ use crate::torpedo::Torpedo;
 pub enum EntityType {
     OurHeroine,
     Ship,
-    Torpedo,
+    Torpedo(bool /* ready */),
 }
 
 #[wasm_bindgen]
@@ -76,6 +76,17 @@ impl Arena {
         for i in (0..self.torpedos.len()).rev() {
             let mut boom = false;
             self.torpedos[i].tick();
+            if !self.torpedos[i].ready() {
+                continue;
+            }
+            if self.torpedos[i]
+                .position()
+                .distance_to(self.our_heroine.position())
+                < 10.
+            {
+                self.our_heroine.shields -= 8.;
+                boom = true;
+            }
             for agent in &mut self.agents {
                 if self.torpedos[i]
                     .position()
@@ -107,11 +118,7 @@ impl Arena {
     pub fn input_fire(&mut self) {
         let mut velocity = self.our_heroine.velocity();
         velocity += self.our_heroine.orientation().unit_velocity() * 0.7;
-        let torpedo = Torpedo::new(
-            // TODO: slight displacement?!
-            self.our_heroine.position(),
-            velocity,
-        );
+        let torpedo = Torpedo::new(self.our_heroine.position(), velocity);
         self.add_torpedo(torpedo);
     }
 
@@ -127,7 +134,7 @@ impl Arena {
             (EntityType::Ship, &self.agents[(i - 1) as usize].ship)
         } else {
             (
-                EntityType::Torpedo,
+                EntityType::Torpedo(self.torpedos[(i - 1 - ship_count) as usize].ready()),
                 &self.torpedos[(i - 1 - ship_count) as usize],
             )
         }
@@ -159,7 +166,7 @@ impl Arena {
         let (entity_type, _) = self.entity(i);
         match entity_type {
             EntityType::OurHeroine | EntityType::Ship => 10.,
-            EntityType::Torpedo => 2.,
+            EntityType::Torpedo(_) => 2.,
         }
     }
 
@@ -168,7 +175,8 @@ impl Arena {
         match entity_type {
             EntityType::OurHeroine => 1,
             EntityType::Ship => 2,
-            EntityType::Torpedo => 3,
+            EntityType::Torpedo(false) => 3,
+            EntityType::Torpedo(true) => 4,
         }
     }
 

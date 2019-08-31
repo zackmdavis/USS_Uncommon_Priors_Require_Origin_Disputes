@@ -5,7 +5,7 @@ const ARENA_WIDTH: f32 = 600.;
 const ARENA_HEIGHT: f32 = 400.;
 
 /// why did Rust choose remainder instead of modulus?!
-fn modulo(a: f32, b: f32) -> f32 {
+pub fn modulo(a: f32, b: f32) -> f32 {
     ((a % b) + b) % b
 }
 

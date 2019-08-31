@@ -33,6 +33,10 @@ impl Torpedo {
         self.timer -= 1;
     }
 
+    pub fn ready(&self) -> bool {
+        self.timer < 425
+    }
+
     pub fn expired(&self) -> bool {
         self.timer == 0
     }

@@ -43,8 +43,8 @@ function space() {
     }
 }
 
-function renderCircle(x, y, r) {
-    ctx.fillStyle = "#ffffff";
+function renderCircle(x, y, r, color) {
+    ctx.fillStyle = color;
     ctx.beginPath();
     ctx.arc(x, y, r, 0, 2 * Math.PI);
     ctx.fill();
@@ -82,8 +82,11 @@ const renderLoop = () => {
             let enemy_dash = document.getElementById("enemy-dash");
             enemy_dash.textContent = `x=${x.toFixed(2)} y=${y.toFixed(2)} θ=${o.toFixed(2)} shields=${s.toFixed(1)}`;
             break;
-        case 3: // torpedo
-            renderCircle(x, y, r);
+        case 3: // inactive/unready torpedo
+            renderCircle(x, y, r, "#505050");
+            break;
+        case 4: // active/ready torpedo
+            renderCircle(x, y, r, "#ffffff");
             break;
         }
     }
