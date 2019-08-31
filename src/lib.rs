@@ -37,22 +37,40 @@ impl Arena {
                 0.3,
                 100.,
             ),
-            agents: vec![Agent {
-                ship: Ship::new(
-                    "Discovery".to_owned(),
-                    Position(100., 150.),
-                    Velocity(0., 0.),
-                    Orientation(-3.),
-                    0.2,
-                    100.,
-                ),
-                ai: Box::new(PatrolAI::new(vec![
-                    Position(100., 100.),
-                    Position(100., 300.),
-                    Position(500., 300.),
-                    Position(500., 100.),
-                ])),
-            }],
+            agents: vec![
+                Agent {
+                    ship: Ship::new(
+                        "Discovery".to_owned(),
+                        Position(100., 150.),
+                        Velocity(0., 0.),
+                        Orientation(-3.),
+                        0.2,
+                        100.,
+                    ),
+                    ai: Box::new(PatrolAI::new(vec![
+                        Position(100., 100.),
+                        Position(100., 300.),
+                        Position(500., 300.),
+                        Position(500., 100.),
+                    ])),
+                },
+                Agent {
+                    ship: Ship::new(
+                        "Valiant".to_owned(),
+                        Position(40., 40.),
+                        Velocity(0., 0.),
+                        Orientation(-3.),
+                        0.2,
+                        100.,
+                    ),
+                    ai: Box::new(PatrolAI::new(vec![
+                        Position(100., 100.),
+                        Position(100., 300.),
+                        Position(500., 300.),
+                        Position(500., 100.),
+                    ])),
+                },
+            ],
             torpedos: Vec::new(),
         }
     }
