@@ -69,6 +69,12 @@ impl Arena {
             agent.ai.tick(&mut agent.ship);
             agent.ship.tick();
         }
+        // separate pass to avoid double-borrow
+        for i in (0..self.agents.len()).rev() {
+            if self.agents[i].ship.shields < 0. {
+                self.agents.swap_remove(i);
+            }
+        }
         for i in (0..self.torpedos.len()).rev() {
             let mut boom = false;
             self.torpedos[i].tick();
