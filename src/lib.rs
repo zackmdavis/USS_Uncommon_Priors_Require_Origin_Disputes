@@ -8,22 +8,21 @@ mod ship;
 mod torpedo;
 
 use crate::agent::{Agent, PatrolAI};
+use crate::entity::{Entity, Orientation, Position, Velocity};
 use crate::ship::Ship;
 use crate::torpedo::Torpedo;
-use crate::entity::{Position, Velocity, Orientation, Entity};
-
 
 pub enum EntityType {
     OurHeroine,
     Ship,
-    Torpedo
+    Torpedo,
 }
 
 #[wasm_bindgen]
 pub struct Arena {
     our_heroine: Ship,
     agents: Vec<Agent>,
-    torpedos: Vec<Torpedo>
+    torpedos: Vec<Torpedo>,
 }
 
 #[wasm_bindgen]
@@ -36,26 +35,25 @@ impl Arena {
                 Velocity(0., 0.),
                 Orientation(0.),
                 0.3,
-                100.
+                100.,
             ),
-            agents: vec![
-                Agent {
-                    ship: Ship::new(
-                        "Discovery".to_owned(),
-                        Position(100., 150.),
-                        Velocity(0., 0.),
-                        Orientation(-3.),
-                        0.2,
-                        100.
-                    ),
-                    ai: Box::new(PatrolAI::new(vec![Position(100., 100.),
-                                                    Position(100., 300.),
-                                                    Position(500., 300.),
-                                                    Position(500., 100.),
-                    ]))
-                }
-            ],
-            torpedos: Vec::new()
+            agents: vec![Agent {
+                ship: Ship::new(
+                    "Discovery".to_owned(),
+                    Position(100., 150.),
+                    Velocity(0., 0.),
+                    Orientation(-3.),
+                    0.2,
+                    100.,
+                ),
+                ai: Box::new(PatrolAI::new(vec![
+                    Position(100., 100.),
+                    Position(100., 300.),
+                    Position(500., 300.),
+                    Position(500., 100.),
+                ])),
+            }],
+            torpedos: Vec::new(),
         }
     }
 
@@ -79,12 +77,16 @@ impl Arena {
             let mut boom = false;
             self.torpedos[i].tick();
             for agent in &mut self.agents {
-                if self.torpedos[i].position().distance_to(agent.ship.position()) < 10. {
+                if self.torpedos[i]
+                    .position()
+                    .distance_to(agent.ship.position())
+                    < 10.
+                {
                     agent.ship.shields -= 9.1;
                     boom = true;
                 }
             }
-            if self.torpedos[i].expired() || boom{
+            if self.torpedos[i].expired() || boom {
                 self.torpedos.swap_remove(i);
             }
         }
@@ -108,7 +110,7 @@ impl Arena {
         let torpedo = Torpedo::new(
             // TODO: slight displacement?!
             self.our_heroine.position(),
-            velocity
+            velocity,
         );
         self.add_torpedo(torpedo);
     }
@@ -122,10 +124,12 @@ impl Arena {
         if i == 0 {
             (EntityType::OurHeroine, &self.our_heroine)
         } else if i >= 1 && i <= ship_count {
-            (EntityType::Ship, &self.agents[(i-1) as usize].ship)
+            (EntityType::Ship, &self.agents[(i - 1) as usize].ship)
         } else {
-            (EntityType::Torpedo,
-             &self.torpedos[(i-1-ship_count) as usize])
+            (
+                EntityType::Torpedo,
+                &self.torpedos[(i - 1 - ship_count) as usize],
+            )
         }
     }
 
@@ -145,7 +149,7 @@ impl Arena {
         if i == 0 {
             self.our_heroine.orientation().0
         } else if i >= 1 && i <= ship_count {
-            self.agents[(i-1) as usize].ship.orientation().0
+            self.agents[(i - 1) as usize].ship.orientation().0
         } else {
             0. // dummy value
         }
@@ -155,7 +159,7 @@ impl Arena {
         let (entity_type, _) = self.entity(i);
         match entity_type {
             EntityType::OurHeroine | EntityType::Ship => 10.,
-            EntityType::Torpedo => 2.
+            EntityType::Torpedo => 2.,
         }
     }
 
@@ -164,7 +168,7 @@ impl Arena {
         match entity_type {
             EntityType::OurHeroine => 1,
             EntityType::Ship => 2,
-            EntityType::Torpedo => 3
+            EntityType::Torpedo => 3,
         }
     }
 
@@ -174,16 +178,15 @@ impl Arena {
         if i == 0 {
             self.our_heroine.shields()
         } else if i >= 1 && i <= ship_count {
-            self.agents[(i-1) as usize].ship.shields()
+            self.agents[(i - 1) as usize].ship.shields()
         } else {
             0. // dummy value
         }
     }
 }
 
-
 #[wasm_bindgen]
-extern {
+extern "C" {
     fn alert(s: &str);
 
     #[wasm_bindgen(js_namespace = console)]

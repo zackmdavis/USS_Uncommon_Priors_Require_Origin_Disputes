@@ -1,4 +1,4 @@
-use crate::entity::{Position, Velocity, Orientation, Spin, Entity};
+use crate::entity::{Entity, Orientation, Position, Spin, Velocity};
 
 pub struct Ship {
     name: String,
@@ -11,22 +11,44 @@ pub struct Ship {
 }
 
 impl Entity for Ship {
-    fn position(&self) -> Position { self.position }
-    fn velocity(&self) -> Velocity { self.velocity }
+    fn position(&self) -> Position {
+        self.position
+    }
+    fn velocity(&self) -> Velocity {
+        self.velocity
+    }
 }
 
-
 impl Ship {
-    pub fn new(name: String, position: Position, velocity: Velocity,
-               orientation: Orientation, thrust_strength: f32, shields: f32) -> Self {
-        Ship { name, position, velocity, orientation, thrust_strength, shields }
+    pub fn new(
+        name: String,
+        position: Position,
+        velocity: Velocity,
+        orientation: Orientation,
+        thrust_strength: f32,
+        shields: f32,
+    ) -> Self {
+        Ship {
+            name,
+            position,
+            velocity,
+            orientation,
+            thrust_strength,
+            shields,
+        }
     }
 
-    pub fn orientation(&self) -> Orientation { self.orientation }
+    pub fn orientation(&self) -> Orientation {
+        self.orientation
+    }
 
-    pub fn thrust_strength(&self) -> f32 { self.thrust_strength }
+    pub fn thrust_strength(&self) -> f32 {
+        self.thrust_strength
+    }
 
-    pub fn shields(&self) -> f32 { self.shields }
+    pub fn shields(&self) -> f32 {
+        self.shields
+    }
 
     pub fn thrust(&mut self) {
         self.velocity += self.orientation.unit_velocity() * self.thrust_strength;

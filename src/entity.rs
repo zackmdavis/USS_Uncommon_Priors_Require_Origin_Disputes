@@ -1,5 +1,5 @@
 use std::f32::consts::PI;
-use std::ops::{Add, AddAssign, Sub, SubAssign, Mul, Neg};
+use std::ops::{Add, AddAssign, Mul, Neg, Sub, SubAssign};
 
 const ARENA_WIDTH: f32 = 600.;
 const ARENA_HEIGHT: f32 = 400.;
@@ -27,7 +27,7 @@ impl Position {
 
     pub fn orientation_to(&self, other: Position) -> Orientation {
         let displacement = other - *self;
-        Orientation((displacement.1/displacement.0).atan())
+        Orientation((displacement.1 / displacement.0).atan())
     }
 }
 
@@ -46,7 +46,6 @@ impl Sub for Velocity {
     fn sub(self, other: Velocity) -> Velocity {
         Velocity(self.0 - other.0, self.1 - other.1)
     }
-
 }
 
 impl SubAssign for Velocity {
@@ -78,12 +77,11 @@ pub struct Orientation(pub f32);
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Spin(pub f32);
 
-
 impl Add<Spin> for Orientation {
     type Output = Self;
 
     fn add(self, other: Spin) -> Self {
-        Orientation(modulo(self.0 + other.0, 2.*PI))
+        Orientation(modulo(self.0 + other.0, 2. * PI))
     }
 }
 
@@ -94,7 +92,7 @@ impl Sub for Orientation {
         let raw = self.0 - other.0;
         if raw.abs() > PI {
             // TODO: simplify?! (formula discovered "empirically")
-            Spin(-1. * ((2.*PI).copysign(raw) - raw))
+            Spin(-1. * ((2. * PI).copysign(raw) - raw))
         } else {
             Spin(raw)
         }
@@ -105,7 +103,7 @@ impl Neg for Orientation {
     type Output = Self;
 
     fn neg(self) -> Orientation {
-        Orientation(modulo(self.0 + PI, 2.*PI))
+        Orientation(modulo(self.0 + PI, 2. * PI))
     }
 }
 
@@ -144,29 +142,32 @@ pub trait Entity {
 
 #[cfg(test)]
 mod tests {
+    use super::{Orientation, Position, Spin, Velocity};
     use std::f32::consts::PI;
-    use super::{Orientation, Position, Velocity, Spin};
 
     // XXX TODO FIXME: what am I failing to understand about macro imports?
     macro_rules! assert_eq_within_eps {
         // crude edit of the canonical `assert_eq!`
-        ($left:expr, $right:expr, $eps:expr) => ({
+        ($left:expr, $right:expr, $eps:expr) => {{
             match (&($left), &($right)) {
                 (left_val, right_val) => {
                     if (*left_val - *right_val).abs() > $eps {
-                        panic!("assertion failed: left and right not within ε={} \
-                                (left: `{:?}`, right: `{:?}`)", $eps, left_val, right_val)
+                        panic!(
+                            "assertion failed: left and right not within ε={} \
+                             (left: `{:?}`, right: `{:?}`)",
+                            $eps, left_val, right_val
+                        )
                     }
                 }
             }
-        })
+        }};
     }
 
     #[test]
     fn concerning_orientation_to() {
         let origin = Position(0., 0.);
         let x = Position(1., 1.);
-        assert_eq!(origin.orientation_to(x), Orientation(PI/4.));
+        assert_eq!(origin.orientation_to(x), Orientation(PI / 4.));
     }
 
     #[test]
@@ -184,30 +185,22 @@ mod tests {
     #[test]
     fn concerning_countering_orientation() {
         let w = Velocity(-1., -1.).countering_orientation();
-        assert_eq_within_eps!(w.0, PI/4., 0.0001);
+        assert_eq_within_eps!(w.0, PI / 4., 0.0001);
     }
 
     #[test]
     fn concerning_orientation_differences_wtf() {
         // Need to consistently report minimal spin (no branch
         // discontinuity at zero)
+        assert_eq_within_eps!(Orientation(0.4) - Orientation(0.2), Spin(0.2), 0.001);
+        assert_eq_within_eps!(Orientation(0.2) - Orientation(0.4), Spin(-0.2), 0.001);
         assert_eq_within_eps!(
-            Orientation(0.4) - Orientation(0.2),
-            Spin(0.2),
-            0.001
-        );
-        assert_eq_within_eps!(
-            Orientation(0.2) - Orientation(0.4),
+            Orientation(2. * PI - 0.1) - Orientation(0.1),
             Spin(-0.2),
             0.001
         );
         assert_eq_within_eps!(
-             Orientation(2.*PI - 0.1) - Orientation(0.1),
-            Spin(-0.2),
-            0.001
-        );
-        assert_eq_within_eps!(
-            Orientation(0.1) - Orientation(2.*PI - 0.1),
+            Orientation(0.1) - Orientation(2. * PI - 0.1),
             Spin(0.2),
             0.001
         );

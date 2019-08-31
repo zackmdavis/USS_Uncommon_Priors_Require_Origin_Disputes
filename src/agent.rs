@@ -1,12 +1,12 @@
-use crate::log;
 use crate::entity::{Entity, Position, Spin};
+use crate::log;
 use crate::ship::Ship;
 
 const CRUISING_SPEED: f32 = 1.;
 
 pub struct Agent {
     pub ship: Ship,
-    pub ai: Box<dyn AI>
+    pub ai: Box<dyn AI>,
 }
 
 pub trait AI {
@@ -31,7 +31,11 @@ pub struct PatrolAI {
 
 impl PatrolAI {
     pub fn new(waypoints: Vec<Position>) -> Self {
-        PatrolAI { waypoints, next: 0, mode: Mode::Orient }
+        PatrolAI {
+            waypoints,
+            next: 0,
+            mode: Mode::Orient,
+        }
     }
 
     pub fn orient(&mut self, ship: &mut Ship) {
@@ -111,25 +115,23 @@ impl PatrolAI {
 }
 
 impl AI for PatrolAI {
-
     fn tick(&mut self, ship: &mut Ship) {
         match self.mode {
             Mode::Orient => {
                 self.orient(ship);
-            },
+            }
             Mode::Accel => {
                 self.accel(ship);
-            },
+            }
             Mode::Glide => {
                 self.glide(ship);
-            },
+            }
             Mode::Disorient => {
                 self.disorient(ship);
-            },
+            }
             Mode::Deaccel => {
                 self.deaccel(ship);
-            },
+            }
         }
     }
-
 }
