@@ -8,7 +8,7 @@ mod ship;
 mod torpedo;
 
 #[allow(unused_imports)]
-use crate::agent::{Agent, PatrolAI,  HunterAI, SensorSweep};
+use crate::agent::{Agent, HunterAI, PatrolAI, SensorSweep};
 use crate::entity::{Entity, Orientation, Position, Velocity};
 use crate::ship::Ship;
 use crate::torpedo::Torpedo;
@@ -27,25 +27,31 @@ pub struct Arena {
 }
 
 fn patrol_fleet(waypoints: &[Position]) -> Vec<Agent> {
-    waypoints.iter().enumerate().map(|(i, wp)| {
-        let mut orders = waypoints.clone().to_vec();
-        orders.rotate_left(i);
-        let Position(x, y) = wp;
-        log(&format!("Patrol Boat {}; position is ({}, {}); orders are {:?}", i, x, y, orders));
-        Agent {
-            ship: Ship::new(
-                format!("Patrol Boat {}", i),
-                Position(x-50., y-50.),
-                Velocity(0., 0.),
-                Orientation(0.),
-                0.2,
-                100.
-            ),
-            ai: Box::new(PatrolAI::new(orders.to_vec()))
-        }
-    }).collect()
+    waypoints
+        .iter()
+        .enumerate()
+        .map(|(i, wp)| {
+            let mut orders = waypoints.clone().to_vec();
+            orders.rotate_left(i);
+            let Position(x, y) = wp;
+            log(&format!(
+                "Patrol Boat {}; position is ({}, {}); orders are {:?}",
+                i, x, y, orders
+            ));
+            Agent {
+                ship: Ship::new(
+                    format!("Patrol Boat {}", i),
+                    Position(x - 50., y - 50.),
+                    Velocity(0., 0.),
+                    Orientation(0.),
+                    0.2,
+                    100.,
+                ),
+                ai: Box::new(PatrolAI::new(orders.to_vec())),
+            }
+        })
+        .collect()
 }
-
 
 #[wasm_bindgen]
 impl Arena {
@@ -78,7 +84,7 @@ impl Arena {
     pub fn tick(&mut self) {
         self.our_heroine.tick();
         let sensors = SensorSweep {
-            heroine_position: self.our_heroine.position()
+            heroine_position: self.our_heroine.position(),
         };
         for agent in &mut self.agents {
             agent.ai.tick(&mut agent.ship, &sensors);
@@ -101,7 +107,8 @@ impl Arena {
                 .distance_to(self.our_heroine.position())
                 < 10.
             {
-                if self.our_heroine.shields > 1. {  // plot armor
+                if self.our_heroine.shields > 1. {
+                    // plot armor
                     self.our_heroine.shields -= 8.;
                 }
                 boom = true;

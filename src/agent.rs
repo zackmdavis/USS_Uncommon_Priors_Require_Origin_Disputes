@@ -10,7 +10,7 @@ pub struct Agent {
 }
 
 pub struct SensorSweep {
-    pub heroine_position: Position
+    pub heroine_position: Position,
 }
 
 pub trait AI {
@@ -47,7 +47,12 @@ impl PatrolAI {
         let heading = ship.position().orientation_to(waypoint);
         let diff: Spin = heading - ship.orientation();
         if diff.0.abs() < 0.1 {
-            log(&format!("{} switching to Accel mode on heading {:?} to waypoint {:?}", ship.name(), heading, waypoint));
+            log(&format!(
+                "{} switching to Accel mode on heading {:?} to waypoint {:?}",
+                ship.name(),
+                heading,
+                waypoint
+            ));
             self.mode = Mode::Accel;
             return;
         }
@@ -85,7 +90,12 @@ impl PatrolAI {
         let waypoint = self.waypoints[self.next];
         let slowdown_distance = self.slowdown_distance(ship);
         if ship.position().distance_to(waypoint) < slowdown_distance {
-            log(&format!("{} switching to Disorient mode with slowdown distance {} to waypoint {:?}", ship.name(), slowdown_distance, waypoint));
+            log(&format!(
+                "{} switching to Disorient mode with slowdown distance {} to waypoint {:?}",
+                ship.name(),
+                slowdown_distance,
+                waypoint
+            ));
             self.mode = Mode::Disorient;
         }
     }
@@ -109,7 +119,10 @@ impl PatrolAI {
         if ship.velocity().abs() > 0.1 {
             ship.thrust();
         } else {
-            log(&format!("{} switching to Orient mode for next waypoint!", ship.name()));
+            log(&format!(
+                "{} switching to Orient mode for next waypoint!",
+                ship.name()
+            ));
             self.next = (self.next + 1) % self.waypoints.len();
             self.mode = Mode::Orient;
         }
@@ -140,7 +153,6 @@ impl AI for PatrolAI {
 
 #[allow(dead_code)]
 pub struct HunterAI;
-
 
 impl AI for HunterAI {
     fn tick(&mut self, ship: &mut Ship, sensors: &SensorSweep) {
