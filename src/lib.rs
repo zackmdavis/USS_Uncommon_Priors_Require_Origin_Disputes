@@ -70,6 +70,22 @@ impl Arena {
                         Position(500., 100.),
                     ])),
                 },
+                Agent {
+                    ship: Ship::new(
+                        "Defiant".to_owned(),
+                        Position(400., 240.),
+                        Velocity(0., 0.),
+                        Orientation(-3.),
+                        0.2,
+                        100.,
+                    ),
+                    ai: Box::new(PatrolAI::new(vec![
+                        Position(500., 300.),
+                        Position(500., 100.),
+                        Position(100., 100.),
+                        Position(100., 300.),
+                    ])),
+                },
             ],
             torpedos: Vec::new(),
         }
