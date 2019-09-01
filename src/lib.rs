@@ -7,7 +7,7 @@ mod entity;
 mod ship;
 mod torpedo;
 
-use crate::agent::{Agent, PatrolAI};
+use crate::agent::{Agent, PatrolAI, HunterAI, SensorSweep};
 use crate::entity::{Entity, Orientation, Position, Velocity};
 use crate::ship::Ship;
 use crate::torpedo::Torpedo;
@@ -86,6 +86,17 @@ impl Arena {
                         Position(100., 300.),
                     ])),
                 },
+                Agent {
+                    ship: Ship::new(
+                        "Titanic".to_owned(),
+                        Position(350., 140.),
+                        Velocity(0., 0.),
+                        Orientation(-3.),
+                        0.2,
+                        100.,
+                    ),
+                    ai: Box::new(HunterAI {}),
+                },
             ],
             torpedos: Vec::new(),
         }
@@ -97,8 +108,11 @@ impl Arena {
 
     pub fn tick(&mut self) {
         self.our_heroine.tick();
+        let sensors = SensorSweep {
+            heroine_position: self.our_heroine.position()
+        };
         for agent in &mut self.agents {
-            agent.ai.tick(&mut agent.ship);
+            agent.ai.tick(&mut agent.ship, &sensors);
             agent.ship.tick();
         }
         // separate pass to avoid double-borrow

@@ -9,9 +9,12 @@ pub struct Agent {
     pub ai: Box<dyn AI>,
 }
 
+pub struct SensorSweep {
+    pub heroine_position: Position
+}
+
 pub trait AI {
-    // TODO: provide observations?!
-    fn tick(&mut self, ship: &mut Ship);
+    fn tick(&mut self, ship: &mut Ship, sensors: &SensorSweep);
 }
 
 #[derive(Debug)]
@@ -115,7 +118,7 @@ impl PatrolAI {
 }
 
 impl AI for PatrolAI {
-    fn tick(&mut self, ship: &mut Ship) {
+    fn tick(&mut self, ship: &mut Ship, _: &SensorSweep) {
         match self.mode {
             Mode::Orient => {
                 self.orient(ship);
@@ -132,6 +135,24 @@ impl AI for PatrolAI {
             Mode::Deaccel => {
                 self.deaccel(ship);
             }
+        }
+    }
+}
+
+pub struct HunterAI;
+
+
+impl AI for HunterAI {
+    fn tick(&mut self, ship: &mut Ship, sensors: &SensorSweep) {
+        let heading = ship.position().orientation_to(sensors.heroine_position);
+        let diff = heading - ship.orientation();
+        if diff.0.abs() < 0.1 {
+            ship.thrust();
+        }
+        if diff.0 > 0. {
+            ship.reorient_right();
+        } else {
+            ship.reorient_left();
         }
     }
 }
