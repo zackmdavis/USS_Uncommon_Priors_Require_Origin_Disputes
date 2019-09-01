@@ -118,7 +118,9 @@ impl Arena {
                 .distance_to(self.our_heroine.position())
                 < 10.
             {
-                self.our_heroine.shields -= 8.;
+                if self.our_heroine.shields > 1. {  // plot armor
+                    self.our_heroine.shields -= 8.;
+                }
                 boom = true;
             }
             for agent in &mut self.agents {
