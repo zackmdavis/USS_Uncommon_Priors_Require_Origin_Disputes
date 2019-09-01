@@ -43,10 +43,11 @@ impl PatrolAI {
     }
 
     pub fn orient(&mut self, ship: &mut Ship) {
-        let heading = ship.position().orientation_to(self.waypoints[self.next]);
+        let waypoint = self.waypoints[self.next];
+        let heading = ship.position().orientation_to(waypoint);
         let diff: Spin = heading - ship.orientation();
         if diff.0.abs() < 0.1 {
-            log("switching to Accel mode");
+            log(&format!("{} switching to Accel mode on heading {:?} to waypoint {:?}", ship.name(), heading, waypoint));
             self.mode = Mode::Accel;
             return;
         }
@@ -61,7 +62,7 @@ impl PatrolAI {
         if ship.velocity().abs() < CRUISING_SPEED {
             ship.thrust();
         } else {
-            log("switching to Glide mode");
+            log(&format!("{} switching to Glide mode", ship.name()));
             self.mode = Mode::Glide;
         }
     }
@@ -81,9 +82,10 @@ impl PatrolAI {
     }
 
     pub fn glide(&mut self, ship: &mut Ship) {
+        let waypoint = self.waypoints[self.next];
         let slowdown_distance = self.slowdown_distance(ship);
-        if ship.position().distance_to(self.waypoints[self.next]) < slowdown_distance {
-            log("switching to Disorient mode");
+        if ship.position().distance_to(waypoint) < slowdown_distance {
+            log(&format!("{} switching to Disorient mode with slowdown distance {} to waypoint {:?}", ship.name(), slowdown_distance, waypoint));
             self.mode = Mode::Disorient;
         }
     }
@@ -92,7 +94,7 @@ impl PatrolAI {
         let heading = ship.velocity().countering_orientation();
         let diff: Spin = heading - ship.orientation();
         if diff.0.abs() <= 0.05 {
-            log("switching to Deaccel mode");
+            log(&format!("{} switching to Deaccel mode", ship.name()));
             self.mode = Mode::Deaccel;
             return;
         }
@@ -107,7 +109,7 @@ impl PatrolAI {
         if ship.velocity().abs() > 0.1 {
             ship.thrust();
         } else {
-            log("switching to Orient mode for next waypoint!");
+            log(&format!("{} switching to Orient mode for next waypoint!", ship.name()));
             self.next = (self.next + 1) % self.waypoints.len();
             self.mode = Mode::Orient;
         }

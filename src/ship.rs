@@ -39,6 +39,10 @@ impl Ship {
         }
     }
 
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+
     pub fn orientation(&self) -> Orientation {
         self.orientation
     }
