@@ -28,7 +28,7 @@ impl Position {
 
     pub fn orientation_to(&self, other: Position) -> Orientation {
         let displacement = other - *self;
-        Orientation((displacement.1 / displacement.0).atan())
+        Orientation((displacement.1).atan2(displacement.0))
     }
 }
 
