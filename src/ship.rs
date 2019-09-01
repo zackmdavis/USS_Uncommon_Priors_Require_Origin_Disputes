@@ -5,8 +5,7 @@ pub struct Ship {
     name: String,
     position: Position,
     velocity: Velocity,
-    // XXX: arbitrarily settable orientation is a hack
-    pub orientation: Orientation,
+    orientation: Orientation,
     thrust_strength: f32,
     pub shields: f32,
 }
