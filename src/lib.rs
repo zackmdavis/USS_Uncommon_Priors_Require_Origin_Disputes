@@ -26,79 +26,47 @@ pub struct Arena {
     torpedos: Vec<Torpedo>,
 }
 
+fn patrol_fleet(waypoints: &[Position]) -> Vec<Agent> {
+    waypoints.iter().enumerate().map(|(i, wp)| {
+        let mut orders = waypoints.clone().to_vec();
+        orders.rotate_left(i);
+        let Position(x, y) = wp;
+        log(&format!("Patrol Boat {}; position is ({}, {}); orders are {:?}", i, x, y, orders));
+        Agent {
+            ship: Ship::new(
+                format!("Patrol Boat {}", i),
+                Position(x-50., y-50.),
+                Velocity(0., 0.),
+                Orientation(0.),
+                0.2,
+                100.
+            ),
+            ai: Box::new(PatrolAI::new(orders.to_vec()))
+        }
+    }).collect()
+}
+
+
 #[wasm_bindgen]
 impl Arena {
     fn new() -> Self {
+        let fleet = patrol_fleet(&[
+            Position(150., 75.),
+            Position(150., 375.),
+            Position(450., 375.),
+            Position(450., 75.),
+        ]);
+
         Arena {
             our_heroine: Ship::new(
                 "Uncommon Priors Require Origin Disputes".to_owned(),
-                Position(100., 100.),
+                Position(150., 150.),
                 Velocity(0., 0.),
                 Orientation(0.),
                 0.3,
                 100.,
             ),
-            agents: vec![
-                Agent {
-                    ship: Ship::new(
-                        "Discovery".to_owned(),
-                        Position(100., 150.),
-                        Velocity(0., 0.),
-                        Orientation(-3.),
-                        0.2,
-                        100.,
-                    ),
-                    ai: Box::new(PatrolAI::new(vec![
-                        Position(100., 100.),
-                        Position(100., 300.),
-                        Position(500., 300.),
-                        Position(500., 100.),
-                    ])),
-                },
-                Agent {
-                    ship: Ship::new(
-                        "Valiant".to_owned(),
-                        Position(40., 40.),
-                        Velocity(0., 0.),
-                        Orientation(-3.),
-                        0.2,
-                        100.,
-                    ),
-                    ai: Box::new(PatrolAI::new(vec![
-                        Position(100., 100.),
-                        Position(100., 300.),
-                        Position(500., 300.),
-                        Position(500., 100.),
-                    ])),
-                },
-                Agent {
-                    ship: Ship::new(
-                        "Defiant".to_owned(),
-                        Position(400., 240.),
-                        Velocity(0., 0.),
-                        Orientation(-3.),
-                        0.2,
-                        100.,
-                    ),
-                    ai: Box::new(PatrolAI::new(vec![
-                        Position(500., 300.),
-                        Position(500., 100.),
-                        Position(100., 100.),
-                        Position(100., 300.),
-                    ])),
-                },
-                Agent {
-                    ship: Ship::new(
-                        "Titanic".to_owned(),
-                        Position(350., 140.),
-                        Velocity(0., 0.),
-                        Orientation(-3.),
-                        0.2,
-                        100.,
-                    ),
-                    ai: Box::new(HunterAI {}),
-                },
-            ],
+            agents: fleet,
             torpedos: Vec::new(),
         }
     }

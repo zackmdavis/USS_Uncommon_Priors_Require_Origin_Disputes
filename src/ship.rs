@@ -1,5 +1,6 @@
 use crate::entity::{SPEED_LIMIT, Entity, Orientation, Position, Spin, Velocity};
 
+#[derive(Debug)]
 pub struct Ship {
     name: String,
     position: Position,

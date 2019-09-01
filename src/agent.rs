@@ -26,6 +26,7 @@ enum Mode {
     Deaccel,
 }
 
+#[derive(Debug)]
 pub struct PatrolAI {
     waypoints: Vec<Position>,
     next: usize,
