@@ -1,8 +1,9 @@
 use std::f32::consts::PI;
 use std::ops::{Add, AddAssign, Mul, Neg, Sub, SubAssign};
 
-const ARENA_WIDTH: f32 = 600.;
-const ARENA_HEIGHT: f32 = 400.;
+pub const ARENA_WIDTH: f32 = 600.;
+pub const ARENA_HEIGHT: f32 = 400.;
+pub const SPEED_LIMIT: f32 = 4.;
 
 /// why did Rust choose remainder instead of modulus?!
 pub fn modulo(a: f32, b: f32) -> f32 {
@@ -33,6 +34,14 @@ impl Position {
 
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Velocity(pub f32, pub f32);
+
+impl Add for Velocity {
+    type Output = Self;
+
+    fn add(self, other: Self) -> Self {
+        Self(self.0 + other.0, self.1 + other.1)
+    }
+}
 
 impl AddAssign for Velocity {
     fn add_assign(&mut self, other: Velocity) {

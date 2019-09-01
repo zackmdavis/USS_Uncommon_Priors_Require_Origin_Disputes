@@ -1,4 +1,4 @@
-use crate::entity::{Entity, Orientation, Position, Spin, Velocity};
+use crate::entity::{SPEED_LIMIT, Entity, Orientation, Position, Spin, Velocity};
 
 pub struct Ship {
     name: String,
@@ -51,7 +51,10 @@ impl Ship {
     }
 
     pub fn thrust(&mut self) {
-        self.velocity += self.orientation.unit_velocity() * self.thrust_strength;
+        let proposed_velocity = self.velocity + self.orientation.unit_velocity() * self.thrust_strength;
+        if proposed_velocity.abs() < SPEED_LIMIT {
+            self.velocity = proposed_velocity;
+        }
     }
 
     pub fn reorient_left(&mut self) {
