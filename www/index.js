@@ -88,8 +88,6 @@ const renderLoop = () => {
         case 2: // other ship
             renderShip(x, y, r, o, "#c0c0c0");
             renderHealthbar(x, y, s);
-            let enemy_dash = document.getElementById("enemy-dash");
-            enemy_dash.textContent = `x=${x.toFixed(2)} y=${y.toFixed(2)} θ=${o.toFixed(2)} shields=${s.toFixed(1)}`;
             break;
         case 3: // inactive/unready torpedo
             renderCircle(x, y, r, "#505050");
