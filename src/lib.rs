@@ -7,7 +7,8 @@ mod entity;
 mod ship;
 mod torpedo;
 
-use crate::agent::{Agent, PatrolAI, HunterAI, SensorSweep};
+#[allow(unused_imports)]
+use crate::agent::{Agent, PatrolAI,  HunterAI, SensorSweep};
 use crate::entity::{Entity, Orientation, Position, Velocity};
 use crate::ship::Ship;
 use crate::torpedo::Torpedo;

@@ -132,6 +132,7 @@ impl Sub for Spin {
 }
 
 impl Spin {
+    #[allow(dead_code)]
     fn abs(&self) -> f32 {
         self.0.abs()
     }

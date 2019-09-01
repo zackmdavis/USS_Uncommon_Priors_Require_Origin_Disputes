@@ -44,9 +44,6 @@ impl PatrolAI {
     pub fn orient(&mut self, ship: &mut Ship) {
         let heading = ship.position().orientation_to(self.waypoints[self.next]);
         let diff: Spin = heading - ship.orientation();
-        log(&format!("heading is {:?}", heading));
-        log(&format!("orientation is {:?}", ship.orientation()));
-        log(&format!("diff is {:?}", diff));
         if diff.0.abs() < 0.1 {
             log("switching to Accel mode");
             self.mode = Mode::Accel;
@@ -84,7 +81,6 @@ impl PatrolAI {
 
     pub fn glide(&mut self, ship: &mut Ship) {
         let slowdown_distance = self.slowdown_distance(ship);
-        log(&format!("slowdown distance is {:?}", slowdown_distance));
         if ship.position().distance_to(self.waypoints[self.next]) < slowdown_distance {
             log("switching to Disorient mode");
             self.mode = Mode::Disorient;
@@ -139,6 +135,7 @@ impl AI for PatrolAI {
     }
 }
 
+#[allow(dead_code)]
 pub struct HunterAI;
 
 
