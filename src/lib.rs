@@ -66,7 +66,7 @@ impl Arena {
             ship: Ship::new(
                 "Turret Mark I".to_owned(),
                 Position(250., 250.),
-                Velocity(0.1, 0.1),
+                Velocity(0., 0.),
                 Orientation(0.),
                 0.2,
                 100.,
