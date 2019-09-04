@@ -10,7 +10,7 @@ pub fn modulo(a: f32, b: f32) -> f32 {
     ((a % b) + b) % b
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Position(pub f32, pub f32);
 
 impl Sub for Position {

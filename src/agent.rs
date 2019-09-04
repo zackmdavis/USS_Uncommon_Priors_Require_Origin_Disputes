@@ -1,4 +1,5 @@
 use crate::entity::{Entity, Position, Spin};
+use crate::torpedo::Torpedo;
 use crate::log;
 use crate::ship::Ship;
 
@@ -14,10 +15,10 @@ pub struct SensorSweep {
 }
 
 pub trait AI {
-    fn tick(&mut self, ship: &mut Ship, sensors: &SensorSweep);
+    fn tick(&mut self, ship: &mut Ship, sensors: &SensorSweep) -> Option<Torpedo>;
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 enum Mode {
     Orient,
     Accel,
@@ -130,7 +131,7 @@ impl PatrolAI {
 }
 
 impl AI for PatrolAI {
-    fn tick(&mut self, ship: &mut Ship, _: &SensorSweep) {
+    fn tick(&mut self, ship: &mut Ship, _: &SensorSweep) -> Option<Torpedo> {
         match self.mode {
             Mode::Orient => {
                 self.orient(ship);
@@ -148,6 +149,30 @@ impl AI for PatrolAI {
                 self.deaccel(ship);
             }
         }
+        None
+    }
+}
+
+pub struct TurretAI { pub cooldown: usize }
+
+impl AI for TurretAI {
+    fn tick(&mut self, ship: &mut Ship, sensors: &SensorSweep) -> Option<Torpedo> {
+        let heading = ship.position().orientation_to(sensors.heroine_position);
+        let diff = heading - ship.orientation();
+        if diff.0 > 0. {
+            ship.reorient_right();
+        } else {
+            ship.reorient_left();
+        }
+        if self.cooldown > 0 {
+            self.cooldown -= 1;
+        }
+        if diff.0.abs() < 0.1 && self.cooldown == 0 {
+            self.cooldown = 50;
+            Some(ship.summon_torpedo())
+        } else {
+            None
+        }
     }
 }
 
@@ -155,7 +180,7 @@ impl AI for PatrolAI {
 pub struct HunterAI;
 
 impl AI for HunterAI {
-    fn tick(&mut self, ship: &mut Ship, sensors: &SensorSweep) {
+    fn tick(&mut self, ship: &mut Ship, sensors: &SensorSweep) -> Option<Torpedo> {
         let heading = ship.position().orientation_to(sensors.heroine_position);
         let diff = heading - ship.orientation();
         if diff.0.abs() < 0.1 {
@@ -166,5 +191,6 @@ impl AI for HunterAI {
         } else {
             ship.reorient_left();
         }
+        None
     }
 }

@@ -1,4 +1,5 @@
 use crate::entity::{Entity, Orientation, Position, Spin, Velocity, SPEED_LIMIT};
+use crate::torpedo::Torpedo;
 
 #[derive(Debug)]
 pub struct Ship {
@@ -72,5 +73,11 @@ impl Ship {
 
     pub fn tick(&mut self) {
         self.position = self.next_position();
+    }
+
+    pub fn summon_torpedo(&self) -> Torpedo {
+        let mut velocity = self.velocity();
+        velocity += self.orientation().unit_velocity() * 0.7;
+        Torpedo::new(self.position(), velocity)
     }
 }

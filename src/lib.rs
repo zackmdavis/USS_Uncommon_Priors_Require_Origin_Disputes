@@ -8,7 +8,7 @@ mod ship;
 mod torpedo;
 
 #[allow(unused_imports)]
-use crate::agent::{Agent, HunterAI, PatrolAI, SensorSweep};
+use crate::agent::{Agent, HunterAI, TurretAI, PatrolAI, SensorSweep};
 use crate::entity::{Entity, Orientation, Position, Velocity};
 use crate::ship::Ship;
 use crate::torpedo::Torpedo;
@@ -56,12 +56,23 @@ fn patrol_fleet(waypoints: &[Position]) -> Vec<Agent> {
 #[wasm_bindgen]
 impl Arena {
     fn new() -> Self {
-        let fleet = patrol_fleet(&[
+        let mut fleet = patrol_fleet(&[
             Position(150., 75.),
             Position(150., 375.),
             Position(450., 375.),
             Position(450., 75.),
         ]);
+        fleet.push(Agent {
+            ship: Ship::new(
+                "Turret Mark I".to_owned(),
+                Position(250., 250.),
+                Velocity(0.1, 0.1),
+                Orientation(0.),
+                0.2,
+                100.,
+            ),
+            ai: Box::new(TurretAI { cooldown: 0 })
+        });
 
         Arena {
             our_heroine: Ship::new(
@@ -87,8 +98,11 @@ impl Arena {
             heroine_position: self.our_heroine.position(),
         };
         for agent in &mut self.agents {
-            agent.ai.tick(&mut agent.ship, &sensors);
             agent.ship.tick();
+            let fire = agent.ai.tick(&mut agent.ship, &sensors);
+            if let Some(torpedo) = fire {
+                self.torpedos.push(torpedo);
+            }
         }
         // separate pass to avoid double-borrow
         for i in (0..self.agents.len()).rev() {
@@ -142,9 +156,7 @@ impl Arena {
     }
 
     pub fn input_fire(&mut self) {
-        let mut velocity = self.our_heroine.velocity();
-        velocity += self.our_heroine.orientation().unit_velocity() * 0.7;
-        let torpedo = Torpedo::new(self.our_heroine.position(), velocity);
+        let torpedo = self.our_heroine.summon_torpedo();
         self.add_torpedo(torpedo);
     }
 
