@@ -1,4 +1,4 @@
-use crate::entity::{Entity, Orientation, Position, Spin, Velocity, SPEED_LIMIT};
+use crate::entity::{Entity, Orientation, Position, Spin, Velocity};
 use crate::torpedo::Torpedo;
 
 #[derive(Debug)]
@@ -8,6 +8,7 @@ pub struct Ship {
     velocity: Velocity,
     orientation: Orientation,
     thrust_strength: f32,
+    top_speed: f32,
     pub shields: f32,
 }
 
@@ -27,6 +28,7 @@ impl Ship {
         velocity: Velocity,
         orientation: Orientation,
         thrust_strength: f32,
+        top_speed: f32,
         shields: f32,
     ) -> Self {
         Ship {
@@ -35,6 +37,7 @@ impl Ship {
             velocity,
             orientation,
             thrust_strength,
+            top_speed,
             shields,
         }
     }
@@ -58,7 +61,7 @@ impl Ship {
     pub fn thrust(&mut self) {
         let proposed_velocity =
             self.velocity + self.orientation.unit_velocity() * self.thrust_strength;
-        if proposed_velocity.abs() < SPEED_LIMIT {
+        if proposed_velocity.abs() < self.top_speed {
             self.velocity = proposed_velocity;
         }
     }

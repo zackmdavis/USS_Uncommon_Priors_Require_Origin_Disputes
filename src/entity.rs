@@ -3,7 +3,6 @@ use std::ops::{Add, AddAssign, Mul, Neg, Sub, SubAssign};
 
 pub const ARENA_WIDTH: f32 = 600.;
 pub const ARENA_HEIGHT: f32 = 400.;
-pub const SPEED_LIMIT: f32 = 4.;
 
 /// why did Rust choose remainder instead of modulus?!
 pub fn modulo(a: f32, b: f32) -> f32 {

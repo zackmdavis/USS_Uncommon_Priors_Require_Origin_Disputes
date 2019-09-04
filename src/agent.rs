@@ -176,21 +176,31 @@ impl AI for TurretAI {
     }
 }
 
-#[allow(dead_code)]
-pub struct HunterAI;
+
+pub struct HunterAI { pub cooldown: usize }
 
 impl AI for HunterAI {
     fn tick(&mut self, ship: &mut Ship, sensors: &SensorSweep) -> Option<Torpedo> {
         let heading = ship.position().orientation_to(sensors.heroine_position);
         let diff = heading - ship.orientation();
-        if diff.0.abs() < 0.1 {
-            ship.thrust();
-        }
         if diff.0 > 0. {
             ship.reorient_right();
         } else {
             ship.reorient_left();
         }
-        None
+        if self.cooldown > 0 {
+            self.cooldown -= 1;
+        }
+        if diff.0.abs() < 0.1 {
+            ship.thrust();
+            if self.cooldown == 0 {
+                self.cooldown = 50;
+                Some(ship.summon_torpedo())
+            } else {
+                None
+            }
+        } else {
+            None
+        }
     }
 }

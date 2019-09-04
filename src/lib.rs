@@ -45,6 +45,7 @@ fn patrol_fleet(waypoints: &[Position]) -> Vec<Agent> {
                     Velocity(0., 0.),
                     Orientation(0.),
                     0.2,
+                    4.,
                     100.,
                 ),
                 ai: Box::new(PatrolAI::new(orders.to_vec())),
@@ -69,9 +70,22 @@ impl Arena {
                 Velocity(0., 0.),
                 Orientation(0.),
                 0.2,
+                1., // whatever
                 100.,
             ),
             ai: Box::new(TurretAI { cooldown: 0 })
+        });
+        fleet.push(Agent {
+            ship: Ship::new(
+                "Bird of Prey".to_owned(),
+                Position(450., 350.),
+                Velocity(0., 0.),
+                Orientation(0.),
+                0.1,
+                0.8, // it's slow
+                100.,
+            ),
+            ai: Box::new(HunterAI { cooldown: 0 })
         });
 
         Arena {
@@ -81,6 +95,7 @@ impl Arena {
                 Velocity(0., 0.),
                 Orientation(0.),
                 0.3,
+                4.,
                 100.,
             ),
             agents: fleet,
