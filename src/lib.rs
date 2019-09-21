@@ -8,7 +8,7 @@ mod ship;
 mod torpedo;
 
 #[allow(unused_imports)]
-use crate::agent::{Agent, HunterAI, TurretAI, PatrolAI, SensorSweep};
+use crate::agent::{Agent, HunterAI, PatrolAI, SensorSweep, TurretAI};
 use crate::entity::{Entity, Orientation, Position, Velocity};
 use crate::ship::Ship;
 use crate::torpedo::Torpedo;
@@ -56,38 +56,7 @@ fn patrol_fleet(waypoints: &[Position]) -> Vec<Agent> {
 
 #[wasm_bindgen]
 impl Arena {
-    fn new() -> Self {
-        let mut fleet = patrol_fleet(&[
-            Position(150., 75.),
-            Position(150., 375.),
-            Position(450., 375.),
-            Position(450., 75.),
-        ]);
-        fleet.push(Agent {
-            ship: Ship::new(
-                "Turret Mark I".to_owned(),
-                Position(250., 250.),
-                Velocity(0., 0.),
-                Orientation(0.),
-                0.2,
-                1., // whatever
-                100.,
-            ),
-            ai: Box::new(TurretAI { cooldown: 0 })
-        });
-        fleet.push(Agent {
-            ship: Ship::new(
-                "Bird of Prey".to_owned(),
-                Position(450., 350.),
-                Velocity(0., 0.),
-                Orientation(0.),
-                0.1,
-                0.8, // it's slow
-                100.,
-            ),
-            ai: Box::new(HunterAI { cooldown: 0 })
-        });
-
+    fn new(fleet: Vec<Agent>) -> Self {
         Arena {
             our_heroine: Ship::new(
                 "Uncommon Priors Require Origin Disputes".to_owned(),
@@ -255,8 +224,45 @@ extern "C" {
 }
 
 #[wasm_bindgen]
-pub fn uncommon_priors_require_origin_disputes() -> Arena {
+pub fn uncommon_priors_require_origin_disputes(scenario_no: u16) -> Arena {
     log("Hello WASM world in console!");
-    let arena = Arena::new();
+    log(&format!("Selected scenario no. {}", scenario_no));
+    let arena = match scenario_no {
+        0 => Arena::new(Vec::new()),
+        1 => Arena::new(patrol_fleet(&[
+            // patrol
+            Position(150., 75.),
+            Position(150., 375.),
+            Position(450., 375.),
+            Position(450., 75.),
+        ])),
+        2 => Arena::new(vec![Agent {
+            // turret
+            ship: Ship::new(
+                "Turret Mark I".to_owned(),
+                Position(250., 250.),
+                Velocity(0., 0.),
+                Orientation(0.),
+                0.2,
+                1., // whatever
+                100.,
+            ),
+            ai: Box::new(TurretAI { cooldown: 0 }),
+        }]),
+        3 => Arena::new(vec![Agent {
+            // hunter
+            ship: Ship::new(
+                "Bird of Prey".to_owned(),
+                Position(450., 350.),
+                Velocity(0., 0.),
+                Orientation(0.),
+                0.1,
+                0.8, // it's slow
+                100.,
+            ),
+            ai: Box::new(HunterAI { cooldown: 0 }),
+        }]),
+        _ => panic!("scenario number does not exist"),
+    };
     arena
 }

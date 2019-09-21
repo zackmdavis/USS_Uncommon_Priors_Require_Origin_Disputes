@@ -89,7 +89,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "uss_uncommon_priors"
-version = "0.3.0"
+version = "0.4.0"
 dependencies = [
  "wasm-bindgen 0.2.25 (registry+https://github.com/rust-lang/crates.io-index)",
 ]

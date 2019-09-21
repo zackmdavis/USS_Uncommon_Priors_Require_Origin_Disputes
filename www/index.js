@@ -65,7 +65,24 @@ function renderHealthbar(x, y, hp) {
     ctx.fillRect(x - 10, y - 20, (hp/100)*20, 3);
 }
 
-let arena = wasm.uncommon_priors_require_origin_disputes();
+let arena = wasm.uncommon_priors_require_origin_disputes(0);
+let scenarios = {
+    'space': 0,
+    'patrol-fleet': 1,
+    'turret': 2,
+    'single-adversary': 3
+};
+for (let scenarioName in scenarios) {
+    document.getElementById(scenarioName).addEventListener(
+        'click',
+        function () {
+            arena = wasm.uncommon_priors_require_origin_disputes(
+                scenarios[scenarioName]
+            );
+        }
+    );
+}
+
 
 const renderLoop = () => {
     arena.tick();
