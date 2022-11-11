@@ -12,7 +12,7 @@
     "hello-wasm-pack": "^0.1.0",
     "uss_uncommon_priors": "file:../pkg",
     "webpack": "^4.39.2",
-    "webpack-cli": "^3.3.7",
+    "webpack-cli": "^3.3.12",
     "webpack-dev-server": "^3.8.0"
   }
 }
